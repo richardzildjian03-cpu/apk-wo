@@ -35,7 +35,7 @@ export default async function PackagesPage() {
           + Tambah Paket
         </summary>
         <div className="card-body">
-          <ActionForm action={createPaketAction} multipart className="grid gap-3 md:grid-cols-2">
+          <ActionForm action={createPaketAction} className="grid gap-3 md:grid-cols-2">
             <div>
               <label className="label">Nama Paket</label>
               <input name="nama" className="input" placeholder="cth: Paket Gold" required />
@@ -110,7 +110,6 @@ export default async function PackagesPage() {
                   <div className="mt-2 grid gap-3">
                     <ActionForm
                       action={updatePaketAction}
-                      multipart
                       className="grid gap-2 rounded-lg border border-zinc-200 p-3"
                     >
                       <input type="hidden" name="id" value={p.id} />

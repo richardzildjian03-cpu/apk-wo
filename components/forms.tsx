@@ -8,20 +8,14 @@ export function ActionForm({
   action,
   children,
   className,
-  multipart = false,
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   children: React.ReactNode;
   className?: string;
-  multipart?: boolean;
 }) {
   const [state, formAction] = useActionState(action, null);
   return (
-    <form
-      action={formAction}
-      className={className}
-      encType={multipart ? "multipart/form-data" : undefined}
-    >
+    <form action={formAction} className={className}>
       {children}
       {state ? (
         <p
