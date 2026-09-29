@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  nama            String
+  email           String   @unique
+  passwordHash    String
+  role            String
+  noHp            String?
+  createdAt       DateTime @default(now())
+  eventsAsKlien   Event[]  @relation("EventKlien")
+  eventsAsLeader  Event[]  @relation("EventLeader")
+  checkIns        CheckIn[] @relation("CheckInPetugas")
+}
+
+model Paket {
+  id          Int     @id @default(autoincrement())
+  nama        String
+  deskripsi   String?
+  harga       Int     @default(0)
+  includeList String?
+  kapasitas   Int?
+  gambar      String?
+  aktif       Boolean @default(true)
+  events      Event[]
+}
+
+model Event {
+  id        Int               @id @default(autoincrement())
+  namaAcara String
+  klienId   Int
+  klien     User              @relation("EventKlien", fields: [klienId], references: [id])
+  paketId   Int?
+  paket     Paket?            @relation(fields: [paketId], references: [id])
+  leaderId  Int?
+  leader    User?             @relation("EventLeader", fields: [leaderId], references: [id])
+  tanggal   DateTime
+  lokasi    String
+  status    String            @default("AKTIF")
+  createdAt DateTime          @default(now())
+  pengantin Pengantin[]
+  keluarga  Keluarga[]
+  tamu      Tamu[]
+  rundown   Rundown[]
+  vendors   PenugasanVendor[]
+}
+
+model Pengantin {
+  id            Int    @id @default(autoincrement())
+  eventId       Int
+  event         Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  namaLengkap   String
+  namaPanggilan String?
+  pihak         String
+  anakKe        Int?
+  namaOrtu      String?
+}
+
+model Keluarga {
+  id       Int    @id @default(autoincrement())
+  eventId  Int
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  nama     String
+  hubungan String
+  pihak    String
+}
+
+model Tamu {
+  id          Int      @id @default(autoincrement())
+  eventId     Int
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  nama        String
+  kategori    String   @default("TEMAN")
+  status      String   @default("REGULAR")
+  jumlahKursi Int      @default(1)
+  noWa        String?
+  qrToken     String   @unique
+  rsvp        Rsvp?
+  checkIn     CheckIn?
+}
+
+model CheckIn {
+  id          Int      @id @default(autoincrement())
+  tamuId      Int      @unique
+  tamu        Tamu     @relation(fields: [tamuId], references: [id], onDelete: Cascade)
+  petugasId   Int
+  petugas     User     @relation("CheckInPetugas", fields: [petugasId], references: [id])
+  waktuCheckIn DateTime @default(now())
+}
+
+model Rsvp {
+  id          Int      @id @default(autoincrement())
+  tamuId      Int      @unique
+  tamu        Tamu     @relation(fields: [tamuId], references: [id], onDelete: Cascade)
+  status      String
+  jumlahHadir Int      @default(1)
+  updatedAt   DateTime @updatedAt
+}
+
+model Vendor {
+  id              Int               @id @default(autoincrement())
+  nama            String
+  kategoriLayanan String
+  kontak          String?
+  penugasan       PenugasanVendor[]
+}
+
+model PenugasanVendor {
+  id               Int    @id @default(autoincrement())
+  eventId          Int
+  event            Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  vendorId         Int
+  vendor           Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  statusKonfirmasi String @default("MENUNGGU")
+}
+
+model Rundown {
+  id       Int    @id @default(autoincrement())
+  eventId  Int
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  waktu    String
+  kegiatan String
+  pic      String?
+}
