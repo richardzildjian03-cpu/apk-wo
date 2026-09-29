@@ -21,15 +21,23 @@ model User {
 }
 
 model Paket {
-  id          Int     @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   nama        String
   deskripsi   String?
-  harga       Int     @default(0)
+  harga       Int           @default(0)
   includeList String?
   kapasitas   Int?
-  gambar      String?
-  aktif       Boolean @default(true)
+  gambars     PaketGambar[]
+  aktif       Boolean       @default(true)
   events      Event[]
+}
+
+model PaketGambar {
+  id      Int   @id @default(autoincrement())
+  paketId Int
+  paket   Paket @relation(fields: [paketId], references: [id], onDelete: Cascade)
+  path    String
+  urutan  Int   @default(0)
 }
 
 model Event {

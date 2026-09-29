@@ -12,7 +12,7 @@ Stack: **Next.js 16 (App Router) + TypeScript + Tailwind CSS v4 + Prisma + SQLit
 - **Detail Event (4 tab)** — Rundown acara, Penugasan Vendor (dengan status konfirmasi), Daftar Tamu (baca-saja), Rekap Kehadiran
 - **Check-in Tamu (H-day)** — halaman `/events/[id]/checkin`: scan QR via kamera HP (html5-qrcode), input manual token/tautan, anti check-in ganda, log + pembatalan (revert), counter live
 - **Vendor** — CRUD vendor + penugasan ke event
-- **Paket** — CRUD paket pernikahan (referensi internal, bukan katalog publik) dengan upload gambar (JPG/PNG/WebP, maks 4MB, tersimpan di `public/uploads/paket/`)
+- **Paket** — CRUD paket pernikahan (referensi internal, bukan katalog publik) dengan upload banyak foto sekaligus (maks 8 foto per paket, JPG/PNG/WebP, maks 4MB per foto, tersimpan di `public/uploads/paket/`). Foto tampil sebagai carousel di kartu paket dengan navigasi panah, titik indikator, counter posisi, dan keyboard arrow. Di form edit, hapus foto satu per satu lewat checkbox.
 - **Pengguna** — kelola akun bos/leader/staff/klien, reset password
 - **Laporan** — rekap kehadiran tamu semua event + export Excel (CSV)
 

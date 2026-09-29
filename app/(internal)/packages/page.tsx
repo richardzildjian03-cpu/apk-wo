@@ -8,6 +8,7 @@ import {
 } from "@/lib/actions/packages";
 import { ActionForm, SubmitButton, ConfirmSubmit } from "@/components/forms";
 import { PageHeader, EmptyState, Badge } from "@/components/ui";
+import { PaketCarousel } from "@/components/paket-carousel";
 
 export const metadata = { title: "Paket" };
 
@@ -16,7 +17,10 @@ export default async function PackagesPage() {
 
   const pakets = await prisma.paket.findMany({
     orderBy: { nama: "asc" },
-    include: { _count: { select: { events: true } } },
+    include: {
+      gambars: { orderBy: { urutan: "asc" } },
+      _count: { select: { events: true } },
+    },
   });
 
   return (
@@ -49,8 +53,14 @@ export default async function PackagesPage() {
               <input name="includeList" className="input" placeholder="Dekorasi, Katering, MUA" />
             </div>
             <div className="md:col-span-2">
-              <label className="label">Gambar Paket (opsional — JPG/PNG/WebP, maks 4MB)</label>
-              <input name="gambar" type="file" accept="image/jpeg,image/png,image/webp" className="input" />
+              <label className="label">Foto Paket (opsional, beberapa foto sekaligus, maks 8, JPG/PNG/WebP, maks 4MB per foto)</label>
+              <input
+                name="gambar"
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/webp"
+                className="input"
+              />
             </div>
             <div className="md:col-span-2">
               <label className="label">Deskripsi</label>
@@ -69,14 +79,7 @@ export default async function PackagesPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           {pakets.map((p) => (
             <div key={p.id} className="card overflow-hidden">
-              {p.gambar ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={p.gambar}
-                  alt={`Gambar ${p.nama}`}
-                  className="h-44 w-full object-cover"
-                />
-              ) : null}
+              <PaketCarousel images={p.gambars} alt={`Gambar ${p.nama}`} />
               <div className="card-header flex items-center justify-between gap-2">
                 <div>
                   <h2 className="card-title">{p.nama}</h2>
@@ -116,27 +119,42 @@ export default async function PackagesPage() {
                       <input name="kapasitas" type="number" min="0" className="input" defaultValue={p.kapasitas ?? ""} />
                       <input name="includeList" className="input" defaultValue={p.includeList ?? ""} />
                       <textarea name="deskripsi" rows={2} className="input" defaultValue={p.deskripsi ?? ""} />
-                      {p.gambar ? (
+                      {p.gambars.length > 0 ? (
                         <div className="rounded-lg border border-zinc-200 p-2">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={p.gambar}
-                            alt={`Gambar saat ini ${p.nama}`}
-                            className="h-24 w-full rounded object-cover"
-                          />
-                          <label className="mt-2 flex items-center gap-2 text-xs text-zinc-600">
-                            <input type="checkbox" name="hapusGambar" className="accent-pink-600" />
-                            Hapus gambar (tanpa mengganti)
-                          </label>
+                          <p className="mb-2 text-xs font-medium text-zinc-600">
+                            Foto saat ini ({p.gambars.length}), centang untuk hapus:
+                          </p>
+                          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                            {p.gambars.map((g) => (
+                              <label key={g.id} className="group cursor-pointer">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={g.path}
+                                  alt={`Foto ${p.nama} ${g.urutan + 1}`}
+                                  className="h-20 w-full rounded object-cover"
+                                />
+                                <span className="mt-1 flex items-center gap-1.5 text-xs text-zinc-600">
+                                  <input
+                                    type="checkbox"
+                                    name="hapusGambarIds"
+                                    value={g.id}
+                                    className="accent-pink-600"
+                                  />
+                                  Hapus
+                                </span>
+                              </label>
+                            ))}
+                          </div>
                         </div>
                       ) : null}
                       <div>
                         <label className="label">
-                          Ganti Gambar {p.gambar ? "(opsional)" : "(JPG/PNG/WebP, maks 4MB)"}
+                          Tambah Foto {p.gambars.length > 0 ? "(opsional)" : "(JPG/PNG/WebP, maks 4MB)"}
                         </label>
                         <input
                           name="gambar"
                           type="file"
+                          multiple
                           accept="image/jpeg,image/png,image/webp"
                           className="input"
                         />
