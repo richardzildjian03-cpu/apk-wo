@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { formatTanggal } from "@/lib/constants";
+import { getSetting } from "@/lib/settings";
 import { submitRsvpAction } from "@/lib/actions/guests";
 import { ActionForm, SubmitButton } from "@/components/forms";
 import { Badge } from "@/components/ui";
@@ -36,6 +37,9 @@ export default async function UndanganPage({ params }: Props) {
   if (!tamu) notFound();
 
   const event = tamu.event;
+  const [footerInvitation] = await Promise.all([
+    getSetting("footer_invitation", "Undangan digital ini dikelola melalui DekorLamaran"),
+  ]);
   const pria = event.pengantin.find((p) => p.pihak === "PRIA");
   const wanita = event.pengantin.find((p) => p.pihak === "WANITA");
   const keluargaPria = event.keluarga.filter((k) => k.pihak === "PRIA");
@@ -261,7 +265,7 @@ export default async function UndanganPage({ params }: Props) {
             Merupakan suatu kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.
           </p>
           <p className="mt-6 text-[10px] text-zinc-300">
-            Undangan digital ini dikelola melalui DekorLamaran
+            {footerInvitation}
           </p>
         </footer>
       </div>

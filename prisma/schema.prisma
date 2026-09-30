@@ -137,3 +137,8 @@ model Rundown {
   kegiatan String
   pic      String?
 }
+
+model Setting {
+  key   String @id
+  value String
+}

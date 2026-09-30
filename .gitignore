@@ -47,3 +47,7 @@ prisma/dev.db-journal
 *.db
 public/uploads/paket/*
 !public/uploads/paket/.gitkeep
+public/uploads/settings/*
+!public/uploads/settings/.gitkeep
+
+wo-app/

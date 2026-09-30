@@ -10,6 +10,7 @@ const ALLOWED_TYPES: Record<string, string> = {
 };
 
 export const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "paket");
+const SETTINGS_DIR = path.join(process.cwd(), "public", "uploads", "settings");
 
 export type UploadResult =
   | { ok: true; publicPath: string }
@@ -39,6 +40,31 @@ export async function deletePaketImage(publicPath: string | null | undefined): P
   const filename = path.basename(publicPath);
   try {
     await unlink(path.join(UPLOAD_DIR, filename));
+  } catch {
+    /* file sudah tidak ada — abaikan */
+  }
+}
+
+export async function saveSettingLogo(file: File): Promise<UploadResult> {
+  if (file.size === 0) return { ok: false, error: "File kosong." };
+  if (file.size > MAX_SIZE) return { ok: false, error: "Ukuran gambar maksimal 4MB." };
+
+  const ext = ALLOWED_TYPES[file.type];
+  if (!ext) return { ok: false, error: "Format gambar harus JPG, PNG, atau WebP." };
+
+  const filename = `logo-${Date.now()}-${randomBytes(6).toString("hex")}${ext}`;
+  await mkdir(SETTINGS_DIR, { recursive: true });
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(path.join(SETTINGS_DIR, filename), buffer);
+
+  return { ok: true, publicPath: `/uploads/settings/${filename}` };
+}
+
+export async function deleteSettingLogo(publicPath: string | null | undefined): Promise<void> {
+  if (!publicPath || !publicPath.startsWith("/uploads/settings/")) return;
+  const filename = path.basename(publicPath);
+  try {
+    await unlink(path.join(SETTINGS_DIR, filename));
   } catch {
     /* file sudah tidak ada — abaikan */
   }
