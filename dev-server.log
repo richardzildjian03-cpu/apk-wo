@@ -6,79 +6,22 @@
 - Local:         http://localhost:3000
 - Network:       http://10.144.86.53:3000
 - Environments: .env
-✓ Ready in 503ms
-✓ Running next.config.ts took 41ms
+✓ Ready in 1497ms
+⚠ Warning: Next.js ignored package-lock.json in D:\kuliahunpam\KP because it is outside the current Git repository (D:\kuliahunpam\KP\wo-app).
+ To use this directory, set `turbopack.root` in your Next.js config.
 
- GET /events/1?tab=rekap 200 in 968ms (next.js: 531ms, proxy.ts: 130ms, application-code: 308ms)
- GET /login 200 in 51ms (next.js: 23ms, application-code: 29ms)
-Cannot specify a encType or method for a form that specifies a function as the action. React provides those automatically. They will get overridden.
- GET /packages 200 in 194ms (next.js: 36ms, proxy.ts: 8ms, application-code: 150ms)
- GET /packages 200 in 155ms (next.js: 10ms, proxy.ts: 14ms, application-code: 132ms)
- GET /dashboard 200 in 87ms (next.js: 33ms, proxy.ts: 7ms, application-code: 48ms)
- GET /events 200 in 92ms (next.js: 35ms, proxy.ts: 8ms, application-code: 49ms)
- GET /dashboard 200 in 104ms (next.js: 36ms, proxy.ts: 13ms, application-code: 55ms)
- GET /events 200 in 66ms (next.js: 18ms, proxy.ts: 6ms, application-code: 43ms)
- GET /users 200 in 171ms (next.js: 97ms, proxy.ts: 13ms, application-code: 62ms)
- GET /packages 200 in 97ms (next.js: 41ms, proxy.ts: 12ms, application-code: 45ms)
+✓ Running next.config.ts took 120ms
+
+ GET /dashboard 200 in 1391ms (next.js: 303ms, proxy.ts: 367ms, application-code: 721ms)
+ GET /dashboard 200 in 280ms (next.js: 17ms, proxy.ts: 18ms, application-code: 244ms)
+ GET /settings 200 in 1117ms (next.js: 937ms, application-code: 180ms)
 [browser] Cannot specify a encType or method for a form that specifies a function as the action. React provides those automatically. They will get overridden. 
- GET /events 200 in 81ms (next.js: 23ms, proxy.ts: 11ms, application-code: 46ms)
- GET /dashboard 200 in 59ms (next.js: 13ms, proxy.ts: 8ms, application-code: 38ms)
- GET /events 200 in 449ms (next.js: 111ms, proxy.ts: 78ms, application-code: 260ms)
- GET /packages 200 in 83ms (next.js: 13ms, proxy.ts: 12ms, application-code: 59ms)
- GET /users 200 in 246ms (next.js: 155ms, proxy.ts: 6ms, application-code: 85ms)
- GET /events 200 in 83ms (next.js: 12ms, proxy.ts: 6ms, application-code: 64ms)
- GET /packages 200 in 57ms (next.js: 11ms, proxy.ts: 5ms, application-code: 40ms)
-✓ Compiled in 494ms
- GET /packages 200 in 81ms (next.js: 12ms, proxy.ts: 8ms, application-code: 61ms)
- GET /events/1?tab=rekap 200 in 179ms (next.js: 37ms, proxy.ts: 9ms, application-code: 133ms)
- GET /packages 200 in 86ms (next.js: 30ms, proxy.ts: 7ms, application-code: 49ms)
- GET /events/1?tab=rekap 200 in 117ms (next.js: 25ms, proxy.ts: 6ms, application-code: 85ms)
- GET /packages 200 in 221ms (next.js: 16ms, proxy.ts: 16ms, application-code: 189ms)
- GET /events/1?tab=rekap 200 in 216ms (next.js: 102ms, proxy.ts: 13ms, application-code: 100ms)
- GET /packages 200 in 107ms (next.js: 23ms, proxy.ts: 7ms, application-code: 77ms)
- GET /events/1?tab=rekap 200 in 130ms (next.js: 71ms, proxy.ts: 7ms, application-code: 52ms)
- GET /login 200 in 103ms (next.js: 32ms, application-code: 71ms)
- GET /dashboard 200 in 136ms (next.js: 44ms, proxy.ts: 6ms, application-code: 87ms)
- GET /klien 200 in 111ms (next.js: 52ms, proxy.ts: 3ms, application-code: 56ms)
- GET /events 200 in 128ms (next.js: 62ms, proxy.ts: 8ms, application-code: 58ms)
- GET /users 200 in 118ms (next.js: 60ms, proxy.ts: 10ms, application-code: 48ms)
- GET /events 200 in 57ms (next.js: 8ms, proxy.ts: 5ms, application-code: 44ms)
- GET /events/1 200 in 112ms (next.js: 43ms, proxy.ts: 7ms, application-code: 63ms)
- GET /events/1?tab=rekap 200 in 103ms (next.js: 23ms, proxy.ts: 6ms, application-code: 74ms)
- GET /dashboard 200 in 53ms (next.js: 7ms, proxy.ts: 5ms, application-code: 42ms)
- GET /events 200 in 74ms (next.js: 11ms, proxy.ts: 9ms, application-code: 54ms)
- GET /packages 200 in 75ms (next.js: 31ms, proxy.ts: 5ms, application-code: 39ms)
- GET /events 200 in 74ms (next.js: 13ms, proxy.ts: 8ms, application-code: 53ms)
- GET /login 200 in 76ms (next.js: 28ms, application-code: 48ms)
- POST /events 200 in 174ms (next.js: 11ms, proxy.ts: 13ms, application-code: 150ms)
-  └─ ƒ logoutAction() in 8ms lib/actions/auth.ts
- GET /klien 200 in 56ms (next.js: 9ms, proxy.ts: 8ms, application-code: 39ms)
- POST /login 200 in 179ms (next.js: 7ms, application-code: 172ms)
-  └─ ƒ loginAction(null, {}) in 90ms lib/actions/auth.ts
- GET /klien/1 200 in 599ms (next.js: 538ms, proxy.ts: 7ms, application-code: 53ms)
- GET /klien/1/tamu 200 in 760ms (next.js: 518ms, proxy.ts: 10ms, application-code: 232ms)
- GET /api/qr/5d2e3b50cb1bb72adaab 200 in 890ms (next.js: 739ms, application-code: 151ms)
- GET /api/qr/e6d575ce735c6ab4323e 200 in 788ms (next.js: 636ms, application-code: 152ms)
- GET /api/qr/b043a390283780bd370d 200 in 789ms (next.js: 636ms, application-code: 153ms)
- GET /api/qr/5ce1465e7aa921f68210 200 in 790ms (next.js: 635ms, application-code: 154ms)
- GET /api/qr/d0de8476da3823381d6e 200 in 781ms (next.js: 625ms, application-code: 155ms)
- GET /api/qr/e78b444499a78036ab5d 200 in 746ms (next.js: 589ms, application-code: 156ms)
- GET /api/qr/d27b86e1917f2033f93d 200 in 147ms (next.js: 14ms, application-code: 133ms)
- GET /api/qr/c3368d607a92ee1ddb0b 200 in 147ms (next.js: 37ms, application-code: 110ms)
- GET /api/qr/a0ad02f4cd13f5cb76c65e5f58bc5744 200 in 149ms (next.js: 59ms, application-code: 89ms)
- GET /api/qr/19332cd3eb49c6229062094f35fe79ec 200 in 150ms (next.js: 80ms, application-code: 69ms)
- GET /api/qr/c08741e50afb0c19bf819da5c8b61b74 200 in 151ms (next.js: 101ms, application-code: 49ms)
- GET /api/qr/79d079bc460b5bc23fd058af155d68f4 200 in 153ms (next.js: 124ms, application-code: 29ms)
- GET /api/qr/c8e6acb76cc3e5930bef1a0fe7006f95 200 in 49ms (next.js: 4ms, application-code: 45ms)
- GET /api/qr/d8d2d4605e527fac5b747859824d62d8 200 in 50ms (next.js: 26ms, application-code: 24ms)
- GET /api/qr/69a1e985dbdafd42c46b5211b71e64a8 200 in 39ms (next.js: 10ms, application-code: 29ms)
- POST /klien/1/tamu 200 in 210ms (next.js: 23ms, proxy.ts: 9ms, application-code: 178ms)
-  └─ ƒ addTamuAction(null, {}) in 19ms lib/actions/guests.ts
- GET /api/qr/69a1e985dbdafd42c46b5211b71e64a8 200 in 236ms (next.js: 129ms, application-code: 107ms)
- GET /events/1/checkin 200 in 1183ms (next.js: 953ms, proxy.ts: 29ms, application-code: 201ms)
- POST /api/checkin 200 in 209ms (next.js: 94ms, application-code: 115ms)
- GET /events/1/checkin 200 in 88ms (next.js: 24ms, proxy.ts: 6ms, application-code: 58ms)
- GET /reports 200 in 131ms (next.js: 97ms, proxy.ts: 6ms, application-code: 29ms)
- GET /events/1?tab=rekap 200 in 79ms (next.js: 15ms, proxy.ts: 5ms, application-code: 60ms)
- GET / 307 in 321ms (next.js: 147ms, application-code: 174ms)
- GET /klien 200 in 234ms (next.js: 20ms, proxy.ts: 11ms, application-code: 204ms)
+Cannot specify a encType or method for a form that specifies a function as the action. React provides those automatically. They will get overridden.
+ GET /settings 200 in 229ms (next.js: 21ms, application-code: 209ms)
+ GET /dashboard 200 in 257ms (next.js: 23ms, proxy.ts: 11ms, application-code: 222ms)
+ GET /dashboard 200 in 267ms (next.js: 20ms, proxy.ts: 18ms, application-code: 228ms)
+ GET /settings 200 in 200ms (next.js: 13ms, application-code: 187ms)
+ GET /login 200 in 336ms (next.js: 225ms, application-code: 111ms)
+ POST /settings 200 in 430ms (next.js: 113ms, application-code: 317ms)
+  └─ ƒ updateBrandingAction(null, {}) in 101ms lib/actions/settings.ts
+ GET /settings 200 in 290ms (next.js: 26ms, application-code: 265ms)

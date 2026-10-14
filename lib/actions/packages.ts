@@ -5,6 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { ROLES } from "@/lib/constants";
 import type { ActionState } from "@/lib/types";
 import { deletePaketImage, savePaketImage } from "@/lib/uploads";
+import { revalidatePath } from "next/cache";
 
 const MAX_GAMBAR = 8;
 
@@ -76,6 +77,7 @@ export async function createPaketAction(
       await prisma.paket.delete({ where: { id: paket.id } });
       return { ok: false, message: err };
     }
+    revalidatePath("/packages");
     return { ok: true, message: `Paket "${nama}" berhasil dibuat.` };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -139,6 +141,7 @@ export async function updatePaketAction(
       where: { id },
       data: { nama, deskripsi, harga, includeList, kapasitas, aktif },
     });
+    revalidatePath("/packages");
     return { ok: true, message: "Paket berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -165,6 +168,7 @@ export async function deletePaketAction(
       await deletePaketImage(g.path);
     }
     await prisma.paket.delete({ where: { id } });
+    revalidatePath("/packages");
     return { ok: true, message: "Paket berhasil dihapus." };
   } catch {
     return { ok: false, message: "Paket tidak dapat dihapus." };

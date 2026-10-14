@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { ROLES } from "@/lib/constants";
 import type { ActionState } from "@/lib/types";
+import { revalidatePath } from "next/cache";
 
 export async function createVendorAction(
   _prev: ActionState,
@@ -21,6 +22,8 @@ export async function createVendorAction(
     }
 
     await prisma.vendor.create({ data: { nama, kategoriLayanan, kontak } });
+    revalidatePath("/vendors");
+    revalidatePath("/events");
     return { ok: true, message: `Vendor "${nama}" berhasil ditambahkan.` };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -44,6 +47,8 @@ export async function updateVendorAction(
     }
 
     await prisma.vendor.update({ where: { id }, data: { nama, kategoriLayanan, kontak } });
+    revalidatePath("/vendors");
+    revalidatePath("/events");
     return { ok: true, message: "Vendor berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -61,6 +66,8 @@ export async function deleteVendorAction(
     if (!id) return { ok: false, message: "ID tidak valid." };
 
     await prisma.vendor.delete({ where: { id } });
+    revalidatePath("/vendors");
+    revalidatePath("/events");
     return { ok: true, message: "Vendor berhasil dihapus." };
   } catch {
     return {

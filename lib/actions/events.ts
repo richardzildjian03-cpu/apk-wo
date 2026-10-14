@@ -6,6 +6,7 @@ import { ROLES } from "@/lib/constants";
 import type { ActionState } from "@/lib/types";
 import type { SessionUser } from "@/lib/auth";
 import type { Event } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 async function getEventForUser(
   session: SessionUser,
@@ -94,6 +95,8 @@ export async function createEventAction(
     await prisma.event.create({
       data: { namaAcara, klienId, paketId, leaderId, tanggal, lokasi, status },
     });
+    revalidatePath("/events");
+    revalidatePath("/dashboard");
     return {
       ok: true,
       message: `Event "${namaAcara}" berhasil dibuat. Silakan lengkapi data pada halaman Event.`,
@@ -133,6 +136,9 @@ export async function updateEventAction(
       where: { id },
       data: { namaAcara, lokasi, tanggal, status, paketId, leaderId },
     });
+    revalidatePath("/events");
+    revalidatePath(`/events/${id}`);
+    revalidatePath("/dashboard");
     return { ok: true, message: "Event berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -150,6 +156,8 @@ export async function deleteEventAction(
     if (!id) return { ok: false, message: "ID tidak valid." };
 
     await prisma.event.delete({ where: { id } });
+    revalidatePath("/events");
+    revalidatePath("/dashboard");
     return { ok: true, message: "Event dan seluruh datanya berhasil dihapus." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menghapus." };
@@ -175,6 +183,8 @@ export async function addRundownAction(
     }
 
     await prisma.rundown.create({ data: { eventId, waktu, kegiatan, pic } });
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/events/${eventId}`, "page");
     return { ok: true, message: "Item rundown berhasil ditambahkan." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -196,6 +206,8 @@ export async function deleteRundownAction(
     if (!event) return { ok: false, message: "Tidak punya akses ke event ini." };
 
     await prisma.rundown.delete({ where: { id } });
+    revalidatePath(`/events/${item.eventId}`);
+    revalidatePath(`/events/${item.eventId}`, "page");
     return { ok: true, message: "Item rundown dihapus." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menghapus." };
@@ -219,6 +231,8 @@ export async function assignVendorAction(
     if (exists) return { ok: false, message: "Vendor sudah ditugaskan ke event ini." };
 
     await prisma.penugasanVendor.create({ data: { eventId, vendorId } });
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/events/${eventId}`, "page");
     return { ok: true, message: "Vendor berhasil ditugaskan." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -245,6 +259,8 @@ export async function updatePenugasanAction(
     }
 
     await prisma.penugasanVendor.update({ where: { id }, data: { statusKonfirmasi } });
+    revalidatePath(`/events/${penugasan.eventId}`);
+    revalidatePath(`/events/${penugasan.eventId}`, "page");
     return { ok: true, message: "Status konfirmasi vendor diperbarui." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -266,6 +282,8 @@ export async function removePenugasanAction(
     if (!event) return { ok: false, message: "Tidak punya akses ke event ini." };
 
     await prisma.penugasanVendor.delete({ where: { id } });
+    revalidatePath(`/events/${penugasan.eventId}`);
+    revalidatePath(`/events/${penugasan.eventId}`, "page");
     return { ok: true, message: "Penugasan vendor dihapus." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menghapus." };

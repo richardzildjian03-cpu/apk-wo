@@ -87,6 +87,8 @@ export async function savePengantinAction(
     }
 
     revalidatePath(`/klien/${eventId}`);
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/events/${eventId}`, "page");
     return { ok: true, message: "Data pengantin berhasil disimpan." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -119,6 +121,8 @@ export async function addKeluargaAction(
 
     await prisma.keluarga.create({ data: { eventId, nama, hubungan, pihak } });
     revalidatePath(`/klien/${eventId}/keluarga`);
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/events/${eventId}`, "page");
     return { ok: true, message: "Data keluarga berhasil ditambahkan." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -141,6 +145,8 @@ export async function deleteKeluargaAction(
 
     await prisma.keluarga.delete({ where: { id } });
     revalidatePath(`/klien/${item.eventId}/keluarga`);
+    revalidatePath(`/events/${item.eventId}`);
+    revalidatePath(`/events/${item.eventId}`, "page");
     return { ok: true, message: "Data keluarga dihapus." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menghapus." };
@@ -184,6 +190,9 @@ export async function addTamuAction(
       data: { eventId, nama, kategori, status, jumlahKursi, noWa, qrToken: generateToken() },
     });
     revalidatePath(`/klien/${eventId}/tamu`);
+    revalidatePath(`/klien/${eventId}/rekap`);
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/events/${eventId}`, "page");
     return { ok: true, message: `Tamu "${nama}" berhasil ditambahkan. QR code otomatis dibuat.` };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -264,6 +273,9 @@ export async function importTamuAction(
     }
 
     revalidatePath(`/klien/${eventId}/tamu`);
+    revalidatePath(`/klien/${eventId}/rekap`);
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/events/${eventId}`, "page");
     if (errors.length > 0) {
       return {
         ok: tamuList.length > 0,
@@ -305,6 +317,9 @@ export async function updateTamuAction(
 
     await prisma.tamu.update({ where: { id }, data: { nama, kategori, status, jumlahKursi, noWa } });
     revalidatePath(`/klien/${tamu.eventId}/tamu`);
+    revalidatePath(`/klien/${tamu.eventId}/rekap`);
+    revalidatePath(`/events/${tamu.eventId}`);
+    revalidatePath(`/events/${tamu.eventId}`, "page");
     return { ok: true, message: "Data tamu berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -327,6 +342,9 @@ export async function deleteTamuAction(
 
     await prisma.tamu.delete({ where: { id } });
     revalidatePath(`/klien/${tamu.eventId}/tamu`);
+    revalidatePath(`/klien/${tamu.eventId}/rekap`);
+    revalidatePath(`/events/${tamu.eventId}`);
+    revalidatePath(`/events/${tamu.eventId}`, "page");
     return { ok: true, message: "Tamu dihapus. QR code terkait kini tidak valid." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menghapus." };

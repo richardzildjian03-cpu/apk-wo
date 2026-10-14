@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, requireRole } from "@/lib/auth";
 import { ROLES } from "@/lib/constants";
 import type { ActionState } from "@/lib/types";
+import { revalidatePath } from "next/cache";
 
 const VALID_ROLES = Object.values(ROLES) as string[];
 
@@ -38,6 +39,7 @@ export async function createUserAction(
     await prisma.user.create({
       data: { nama, email, passwordHash: hashPassword(password), role, noHp },
     });
+    revalidatePath("/users");
     return { ok: true, message: `Akun ${nama} berhasil dibuat.` };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -69,6 +71,7 @@ export async function updateUserAction(
     }
 
     await prisma.user.update({ where: { id }, data: { nama, email, role, noHp } });
+    revalidatePath("/users");
     return { ok: true, message: "Data akun berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -92,6 +95,7 @@ export async function resetPasswordAction(
       where: { id },
       data: { passwordHash: hashPassword(password) },
     });
+    revalidatePath("/users");
     return { ok: true, message: "Password berhasil direset." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
@@ -124,6 +128,7 @@ export async function deleteUserAction(
     }
 
     await prisma.user.delete({ where: { id } });
+    revalidatePath("/users");
     return { ok: true, message: "Akun berhasil dihapus." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menyimpan." };
