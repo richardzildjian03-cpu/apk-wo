@@ -20,11 +20,6 @@ type Hasil = {
   message: string;
 };
 
-type ScannerInstance = {
-  stop: () => Promise<void>;
-  clear: () => void;
-};
-
 function formatWaktu(iso?: string): string {
   if (!iso) return "";
   const d = new Date(iso);
@@ -48,10 +43,7 @@ export function SelfCheckinForm({
   const [mengirim, setMengirim] = useState(false);
   const [tamuList, setTamuList] = useState<TamuOption[]>([]);
   const [showSaran, setShowSaran] = useState(false);
-  const [scanning, setScanning] = useState(false);
-  const [cameraError, setCameraError] = useState<string | null>(null);
 
-  const scannerRef = useRef<ScannerInstance | null>(null);
   const mountedRef = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -142,127 +134,24 @@ export function SelfCheckinForm({
     [eventToken, keterangan],
   );
 
-  const stopScanner = useCallback(async () => {
-    const s = scannerRef.current;
-    scannerRef.current = null;
-    if (s) {
-      try {
-        await s.stop();
-        s.clear();
-      } catch {
-        /* abaikan */
-      }
-    }
-    if (mountedRef.current) setScanning(false);
-  }, []);
-
-  const startScanner = useCallback(async () => {
-    setCameraError(null);
-    try {
-      const { Html5Qrcode } = await import("html5-qrcode");
-      const instance = new Html5Qrcode("self-checkin-reader");
-      scannerRef.current = instance;
-      await instance.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 230, height: 230 } },
-        () => {
-          // Tamu sudah berada di halaman yang benar — cukup hentikan kamera
-          // dan arahkan fokus ke input nama.
-          void stopScanner();
-          inputRef.current?.focus();
-        },
-        () => {
-          /* frame tanpa QR */
-        },
-      );
-      if (mountedRef.current) setScanning(true);
-    } catch {
-      scannerRef.current = null;
-      if (mountedRef.current) {
-        setScanning(false);
-        setCameraError(
-          "Kamera tidak bisa dibuka. Izinkan akses kamera di pengaturan browser, lalu muat ulang halaman. Anda tetap bisa isi nama secara manual di bawah.",
-        );
-      }
-    }
-  }, [stopScanner]);
-
-  // Bersihkan kamera saat keluar halaman — mencegah kamera menyala terus.
-  useEffect(() => {
-    const onUnhandled = (e: PromiseRejectionEvent) => {
-      const reason = e.reason as { name?: string; message?: string } | undefined;
-      if (
-        reason?.name === "AbortError" &&
-        typeof reason.message === "string" &&
-        /play\(\)|new load request/.test(reason.message)
-      ) {
-        e.preventDefault();
-      }
-    };
-    window.addEventListener("unhandledrejection", onUnhandled);
-    return () => {
-      window.removeEventListener("unhandledrejection", onUnhandled);
-      const s = scannerRef.current;
-      scannerRef.current = null;
-      if (s) {
-        s.stop()
-          .then(() => s.clear())
-          .catch(() => {
-            /* abaikan */
-          });
-      }
-    };
+  const kirimLagi = useCallback(() => {
+    setHasil(null);
+    setNama("");
+    setJumlah(1);
+    setKeterangan("");
+    inputRef.current?.focus();
   }, []);
 
   return (
     <div className="space-y-5">
-      {/* Kamera opsional — untuk tamu yang mau verifikasi QR */}
+      {/* Form konfirmasi kehadiran — tamu sudah sampai di sini setelah scan QR acara */}
       <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm">
-        <p className="text-xs tracking-[0.25em] text-pink-400 uppercase">Langkah 1</p>
-        <h2 className="inv-serif mt-1 text-lg font-semibold text-zinc-900">Scan QR di Lokasi</h2>
-        <p className="mt-1 text-sm text-zinc-500">
-          Bila Anda baru tiba, scan QR yang tertempel di meja penerimaan.
-        </p>
-
-        <div className="relative mx-auto mt-4 w-full max-w-xs">
-          <div
-            id="self-checkin-reader"
-            className={`w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-900 ${
-              scanning ? "min-h-60" : "min-h-14"
-            }`}
-          />
-          {!scanning ? (
-            <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-xs text-zinc-400">
-              Kamera belum aktif
-            </p>
-          ) : null}
-        </div>
-
-        <div className="mt-3 flex justify-center">
-          {scanning ? (
-            <button type="button" className="btn-secondary" onClick={() => void stopScanner()}>
-              Matikan Kamera
-            </button>
-          ) : (
-            <button type="button" className="btn-success" onClick={() => void startScanner()}>
-              Buka Kamera
-            </button>
-          )}
-        </div>
-
-        {cameraError ? (
-          <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">{cameraError}</p>
-        ) : null}
-      </div>
-
-      {/* Form konfirmasi kehadiran */}
-      <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm">
-        <p className="text-xs tracking-[0.25em] text-pink-400 uppercase">Langkah 2</p>
+        <p className="text-xs tracking-[0.25em] text-pink-400 uppercase">Konfirmasi Kehadiran</p>
         <h2 className="inv-serif mt-1 text-lg font-semibold text-zinc-900">
-          Konfirmasi Kehadiran
+          Tulis Nama Anda
         </h2>
         <p className="mt-1 text-sm text-zinc-500">
-          Tulis nama Anda seperti yang tertera pada undangan.
+          Nama sesuai undangan agar kehadiran Anda langsung tercatat.
         </p>
 
         <form
@@ -435,16 +324,7 @@ export function SelfCheckinForm({
           </p>
 
           {hasil.ok ? (
-            <button
-              type="button"
-              className="btn-secondary mt-4"
-              onClick={() => {
-                setHasil(null);
-                setNama("");
-                setJumlah(1);
-                setKeterangan("");
-              }}
-            >
+            <button type="button" className="btn-secondary mt-4" onClick={kirimLagi}>
               Isi Kehadiran Lain
             </button>
           ) : null}

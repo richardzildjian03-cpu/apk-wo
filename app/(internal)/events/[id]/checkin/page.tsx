@@ -62,12 +62,78 @@ export default async function CheckinPage({ params }: Props) {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <CheckinScanner
-          eventId={event.id}
-          totalTamu={tamuList.length}
-          initialCheckedIn={checkedInCount}
-        />
+        {modeQr === "SATU_QR" ? (
+          <div className="card">
+            <div className="card-header-green flex flex-wrap items-center justify-between gap-2">
+              <h2 className="card-title-white">QR Master Acara</h2>
+              <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold text-white">
+                {checkedInCount}/{tamuList.length} tamu sudah check-in
+              </span>
+            </div>
+            <div className="card-body space-y-4">
+              <p className="text-sm text-zinc-600">
+                Tamu scan QR ini dengan kamera HP masing-masing, lalu menulis namanya sendiri.
+                Tugas Anda cukup menampilkan QR ini — tidak perlu membuka kamera.
+              </p>
 
+              <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+                <div className="shrink-0 rounded-xl border border-emerald-200 bg-white p-3 shadow-sm">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/api/qr-acara/${event.eventToken}?ukuran=480`}
+                    alt="QR master check-in acara"
+                    width={180}
+                    height={180}
+                    className="h-44 w-44 object-contain"
+                  />
+                </div>
+                <div className="w-full space-y-3">
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2.5">
+                      <p className="text-[11px] text-zinc-500">Total</p>
+                      <p className="text-lg font-semibold text-zinc-900">{tamuList.length}</p>
+                    </div>
+                    <div className="rounded-lg border border-emerald-700 bg-emerald-600 px-2 py-2.5">
+                      <p className="text-[11px] text-emerald-100">Hadir</p>
+                      <p className="text-lg font-bold text-white">{checkedInCount}</p>
+                    </div>
+                    <div className="rounded-lg border border-pink-300 bg-pink-100 px-2 py-2.5">
+                      <p className="text-[11px] text-pink-700">Belum</p>
+                      <p className="text-lg font-semibold text-pink-800">
+                        {tamuList.length - checkedInCount}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <a
+                      href={`/api/qr-acara/${event.eventToken}?ukuran=1024&unduh=1`}
+                      className="btn-secondary !text-xs"
+                    >
+                      Unduh QR (PNG)
+                    </a>
+                    <a
+                      href={`/api/qr-acara/${event.eventToken}?ukuran=1024`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary !text-xs"
+                    >
+                      Buka QR Besar
+                    </a>
+                  </div>
+                  <p className="text-[11px] text-emerald-700">
+                    Cetak minimal 5×5 cm dan tempel di meja penerimaan.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <CheckinScanner
+            eventId={event.id}
+            totalTamu={tamuList.length}
+            initialCheckedIn={checkedInCount}
+          />
+        )}
         <div className="card flex flex-col">
           <div className="card-header-green flex items-center justify-between gap-2">
             <h2 className="card-title-white">Log Check-in</h2>
@@ -138,46 +204,40 @@ export default async function CheckinPage({ params }: Props) {
       </div>
 
       {/* Info mode QR yang sedang aktif */}
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+      <div className="mt-6">
         <div
-          className={`rounded-xl border p-4 shadow-sm lg:col-span-3 ${
+          className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4 shadow-sm ${
             modeQr === "SATU_QR"
               ? "border-emerald-200 bg-emerald-50/60"
               : "border-pink-200 bg-pink-50/60"
           }`}
         >
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span
+              className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white ${
+                modeQr === "SATU_QR" ? "bg-emerald-600" : "bg-pink-600"
+              }`}
+              aria-hidden="true"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <path d="M14 14h3v3h-3zM18 18h3v3h-3z" />
+              </svg>
+            </span>
             <div>
-              <p className="text-xs font-medium tracking-wide uppercase text-zinc-500">
-                Mode QR Aktif
-              </p>
-              <p className="mt-0.5 font-semibold text-zinc-900">
+              <p className="text-xs font-medium tracking-wide text-zinc-500 uppercase">Mode QR Aktif</p>
+              <p className="text-sm font-semibold text-zinc-900">
                 {modeQr === "SATU_QR"
-                  ? "1 QR untuk Semua Tamu (tamu check-in mandiri)"
-                  : "1 Tamu 1 QR (petugas scan QR tamu)"}
+                  ? "1 QR untuk Semua Tamu — tamu scan sendiri"
+                  : "1 Tamu 1 QR — petugas scan QR tamu"}
               </p>
-              <p className="mt-1 text-xs text-zinc-600">
-                {modeQr === "SATU_QR"
-                  ? "Tamu scan QR master di lokasi lalu mengisi nama sendiri. Counter di bawah mencakup check-in mandiri."
-                  : "Petugas scan QR pribadi tamu memakai kamera di bawah, atau input manual token."}
-              </p>
-            </div>
-            <div className="flex shrink-0 flex-wrap gap-2">
-              <Link href={`/events/${event.id}?tab=rekap`} className="btn-secondary !text-xs">
-                Lihat Rekap
-              </Link>
-              {modeQr === "SATU_QR" ? (
-                <a
-                  href={`/api/qr-acara/${event.eventToken}?ukuran=1024`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary !text-xs"
-                >
-                  Buka QR Master
-                </a>
-              ) : null}
             </div>
           </div>
+          <Link href={`/events/${event.id}?tab=rekap`} className="btn-secondary !text-xs shrink-0">
+            Lihat Rekap
+          </Link>
         </div>
       </div>
 
