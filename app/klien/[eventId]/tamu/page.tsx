@@ -14,18 +14,13 @@ import { ActionForm, SubmitButton, ConfirmSubmit, CopyButton } from "@/component
 import { Card, EmptyState, TamuStatusBadge, RsvpBadge, StatCard } from "@/components/ui";
 import { ModeQrPanel } from "@/components/mode-qr-panel";
 import { Disclosure, InlineToggle } from "@/components/disclosure";
+import { baseUrlFromHeaders } from "@/lib/base-url";
 
 type Props = {
   params: Promise<{ eventId: string }>;
 };
 
 export const metadata = { title: "Tamu & QR" };
-
-function siteUrl(host: string | null): string {
-  if (!host) return "";
-  const proto = host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https";
-  return `${proto}://${host}`;
-}
 
 export default async function KlienTamuPage({ params }: Props) {
   const session = await requireRole(ROLES.KLIEN);
@@ -41,7 +36,7 @@ export default async function KlienTamuPage({ params }: Props) {
   ]);
   if (!event || event.klienId !== session.id) notFound();
 
-  const base = siteUrl(headerList.get("host"));
+  const base = baseUrlFromHeaders(headerList);
   const tamuList = event.tamu;
   const vipCount = tamuList.filter((t) => t.status === "VIP").length;
   const kursiTotal = tamuList.reduce((s, t) => s + t.jumlahKursi, 0);

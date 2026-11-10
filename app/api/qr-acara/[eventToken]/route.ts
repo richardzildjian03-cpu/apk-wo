@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { baseUrlFromHeaders } from "@/lib/base-url";
 
 /**
  * QR master untuk mode SATU_QR.
@@ -28,7 +29,7 @@ export async function GET(
   const sizeRaw = Number(url.searchParams.get("ukuran") ?? 640);
   const size = Number.isFinite(sizeRaw) ? Math.min(Math.max(Math.round(sizeRaw), 160), 1600) : 640;
 
-  const target = `${url.origin}/checkin/${eventToken}`;
+  const target = `${baseUrlFromHeaders(request.headers)}/checkin/${eventToken}`;
 
   const png = await QRCode.toBuffer(target, {
     width: size,

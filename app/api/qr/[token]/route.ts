@@ -1,13 +1,13 @@
 import QRCode from "qrcode";
 import { NextResponse } from "next/server";
+import { baseUrlFromHeaders } from "@/lib/base-url";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ token: string }> },
 ) {
   const { token } = await params;
-  const origin = new URL(request.url).origin;
-  const targetUrl = `${origin}/undangan/${token}`;
+  const targetUrl = `${baseUrlFromHeaders(request.headers)}/undangan/${token}`;
 
   const png = await QRCode.toBuffer(targetUrl, {
     width: 320,
