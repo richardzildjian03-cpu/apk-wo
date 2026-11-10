@@ -20,19 +20,26 @@ export default async function LoginPage() {
     <main className="flex min-h-screen flex-1 items-center justify-center bg-gradient-to-br from-pink-100 via-white to-emerald-100 px-4 py-10">
       <div className="fade-in w-full max-w-md">
         <div className="overflow-hidden rounded-2xl border border-pink-200 shadow-xl shadow-pink-200/50">
-          <div className="sidebar-brand flex flex-col items-center gap-3 px-6 py-8 text-center">
-            {logoPath ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={logoPath}
-                alt={siteName}
-                className="h-16 w-16 rounded-xl object-contain"
-              />
-            ) : null}
+          <div className="sidebar-brand flex flex-col items-center gap-4 px-6 py-8 text-center">
+            <span className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-white/40">
+              {logoPath ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={logoPath} alt={siteName} className="h-full w-full object-contain p-1.5" />
+              ) : (
+                <span className="grid h-full w-full place-items-center bg-gradient-to-br from-pink-500 to-pink-600 text-2xl font-bold text-white">
+                  {(siteName || "DL")
+                    .split(/\s+/)
+                    .map((w) => w[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </span>
+              )}
+            </span>
             <div>
-              <p className="inv-script text-4xl text-emerald-300">{siteName}</p>
+              <p className="text-3xl font-semibold tracking-tight text-white">{siteName}</p>
               {siteTagline ? (
-                <p className="mt-2 text-xs font-semibold tracking-[0.25em] text-emerald-200 uppercase">
+                <p className="mt-2 text-[11px] font-semibold tracking-[0.22em] text-emerald-200 uppercase">
                   {siteTagline}
                 </p>
               ) : null}

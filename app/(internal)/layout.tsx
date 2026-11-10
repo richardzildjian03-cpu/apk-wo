@@ -3,6 +3,7 @@ import { ROLE_LABELS, ROLES } from "@/lib/constants";
 import { getSetting } from "@/lib/settings";
 import { logoutAction } from "@/lib/actions/auth";
 import { NavLinks, type NavItem } from "@/components/nav-links";
+import { BrandLogo } from "@/components/brand-logo";
 import Link from "next/link";
 
 export default async function InternalLayout({
@@ -45,19 +46,13 @@ export default async function InternalLayout({
       <div className="no-print fixed inset-x-0 top-0 z-20 h-1.5 bg-emerald-500" />
 
       <aside className="no-print hidden w-64 shrink-0 flex-col sidebar-brand shadow-xl md:flex">
-        <div className="border-b border-white/20 px-5 py-6">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            {logoPath ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={logoPath} alt={siteName} className="h-10 w-10 rounded-lg object-contain" />
-            ) : null}
-            <div>
-              <p className="inv-script text-2xl text-emerald-300">{siteName}</p>
-              <p className="mt-0.5 text-[10px] font-semibold tracking-[0.2em] text-emerald-200 uppercase">
-                Internal Panel
-              </p>
-            </div>
-          </Link>
+        <div className="border-b border-white/20 px-4 py-5">
+          <BrandLogo
+            siteName={siteName}
+            logoPath={logoPath}
+            subtitle="Internal Panel"
+            href="/dashboard"
+          />
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           <NavLinks items={navItems} dark />
@@ -81,17 +76,10 @@ export default async function InternalLayout({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="no-print mt-1 flex items-center justify-between gap-3 border-b border-pink-100 bg-white/85 px-4 py-3 backdrop-blur md:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-              {logoPath ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={logoPath} alt={siteName} className="h-8 w-8 rounded-md object-contain" />
-              ) : (
-                <span className="inv-script rounded-lg bg-emerald-600 px-2.5 py-1 text-lg text-white shadow-md">
-                  DL
-                </span>
-              )}
+            <Link href="/dashboard" className="md:hidden">
+              <BrandLogo siteName={siteName} logoPath={logoPath} size="sm" />
             </Link>
-            <div className="min-w-0">
+            <div className="hidden min-w-0 md:block">
               <p className="truncate text-sm font-semibold text-zinc-900">{session.nama}</p>
               <p className="truncate text-xs text-pink-600">{ROLE_LABELS[session.role]}</p>
             </div>
