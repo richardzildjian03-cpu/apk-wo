@@ -79,12 +79,12 @@ export default async function InternalLayout({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="no-print mt-1 flex items-center justify-between gap-4 border-b border-pink-100 bg-white/80 px-4 py-3 backdrop-blur md:px-6">
+        <header className="no-print mt-1 flex items-center justify-between gap-3 border-b border-pink-100 bg-white/85 px-4 py-3 backdrop-blur md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
               {logoPath ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={logoPath} alt={siteName} className="h-7 w-7 rounded-md object-contain" />
+                <img src={logoPath} alt={siteName} className="h-8 w-8 rounded-md object-contain" />
               ) : (
                 <span className="inv-script rounded-lg bg-emerald-600 px-2.5 py-1 text-lg text-white shadow-md">
                   DL
@@ -93,19 +93,21 @@ export default async function InternalLayout({
             </Link>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-zinc-900">{session.nama}</p>
-              <p className="text-xs text-pink-600">{ROLE_LABELS[session.role]}</p>
+              <p className="truncate text-xs text-pink-600">{ROLE_LABELS[session.role]}</p>
             </div>
           </div>
-          <form action={logoutAction}>
-            <button type="submit" className="btn-secondary md:hidden">
-              Keluar
-            </button>
-          </form>
-          {session.role !== ROLES.LEADER ? (
-            <Link href="/events" className="btn-primary hidden md:inline-flex">
-              + Event Baru
-            </Link>
-          ) : null}
+          <div className="flex shrink-0 items-center gap-2">
+            {session.role !== ROLES.LEADER ? (
+              <Link href="/events" className="btn-primary !px-3 !py-1.5 text-xs md:!px-4 md:!py-2 md:text-sm">
+                + Event
+              </Link>
+            ) : null}
+            <form action={logoutAction} className="md:hidden">
+              <button type="submit" className="btn-secondary !px-3 !py-1.5 text-xs">
+                Keluar
+              </button>
+            </form>
+          </div>
         </header>
 
         <nav className="no-print mt-1 flex gap-1 overflow-x-auto sidebar-brand px-3 py-2 md:hidden">

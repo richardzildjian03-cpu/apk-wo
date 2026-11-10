@@ -41,23 +41,28 @@ model PaketGambar {
 }
 
 model Event {
-  id        Int               @id @default(autoincrement())
-  namaAcara String
-  klienId   Int
-  klien     User              @relation("EventKlien", fields: [klienId], references: [id])
-  paketId   Int?
-  paket     Paket?            @relation(fields: [paketId], references: [id])
-  leaderId  Int?
-  leader    User?             @relation("EventLeader", fields: [leaderId], references: [id])
-  tanggal   DateTime
-  lokasi    String
-  status    String            @default("AKTIF")
-  createdAt DateTime          @default(now())
-  pengantin Pengantin[]
-  keluarga  Keluarga[]
-  tamu      Tamu[]
-  rundown   Rundown[]
-  vendors   PenugasanVendor[]
+  id          Int               @id @default(autoincrement())
+  namaAcara   String
+  klienId     Int
+  klien       User              @relation("EventKlien", fields: [klienId], references: [id])
+  paketId     Int?
+  paket       Paket?            @relation(fields: [paketId], references: [id])
+  leaderId    Int?
+  leader      User?             @relation("EventLeader", fields: [leaderId], references: [id])
+  tanggal     DateTime
+  lokasi      String
+  status      String            @default("AKTIF")
+  // Mode QR: PER_TAMU (QR unik tiap tamu) | SATU_QR (1 QR acara, tamu self check-in)
+  modeQr      String            @default("PER_TAMU")
+  // Token acara untuk QR master (mode SATU_QR)
+  eventToken  String?           @unique
+  createdAt   DateTime          @default(now())
+  pengantin   Pengantin[]
+  keluarga    Keluarga[]
+  tamu        Tamu[]
+  rundown     Rundown[]
+  vendors     PenugasanVendor[]
+  walkIns     WalkIn[]
 }
 
 model Pengantin {
@@ -98,8 +103,10 @@ model CheckIn {
   id          Int      @id @default(autoincrement())
   tamuId      Int      @unique
   tamu        Tamu     @relation(fields: [tamuId], references: [id], onDelete: Cascade)
-  petugasId   Int
-  petugas     User     @relation("CheckInPetugas", fields: [petugasId], references: [id])
+  petugasId   Int?
+  petugas     User?    @relation("CheckInPetugas", fields: [petugasId], references: [id])
+  // Sumber check-in: PETUGAS (scan QR per tamu) | MANDIRI (tamu self scan di mode SATU_QR)
+  sumber      String   @default("PETUGAS")
   waktuCheckIn DateTime @default(now())
 }
 
@@ -141,4 +148,16 @@ model Rundown {
 model Setting {
   key   String @id
   value String
+}
+
+// Log tamu walk-in: tamu yang datang tanpa terdaftar (mode SATU_QR)
+model WalkIn {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  nama      String
+  jumlah    Int      @default(1)
+  noWa      String?
+  keterangan String?
+  createdAt DateTime @default(now())
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { ActionState } from "@/lib/types";
 
@@ -84,20 +84,42 @@ export function ConfirmSubmit({
 }
 
 export function CopyButton({ text, label = "Salin Tautan" }: { text: string; label?: string }) {
+  const [tersalin, setTersalin] = useState(false);
+
   return (
     <button
       type="button"
-      className="btn-secondary"
+      className="btn-secondary !px-3 !py-1.5 text-xs"
       onClick={async () => {
+        let sukses = false;
         try {
           await navigator.clipboard.writeText(text);
-          window.alert("Tautan berhasil disalin:\n" + text);
+          sukses = true;
         } catch {
+          // Fallback untuk browser/konteks tanpa clipboard API (mis. HTTP non-localhost)
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            sukses = document.execCommand("copy");
+            document.body.removeChild(ta);
+          } catch {
+            sukses = false;
+          }
+        }
+
+        if (sukses) {
+          setTersalin(true);
+          setTimeout(() => setTersalin(false), 1800);
+        } else {
           window.prompt("Salin tautan berikut secara manual:", text);
         }
       }}
     >
-      {label}
+      {tersalin ? "Tersalin!" : label}
     </button>
   );
 }

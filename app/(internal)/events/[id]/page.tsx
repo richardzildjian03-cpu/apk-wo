@@ -62,6 +62,7 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
       vendors: { include: { vendor: true } },
       tamu: { include: { rsvp: true, checkIn: true }, orderBy: { nama: "asc" } },
       pengantin: true,
+      walkIns: { orderBy: { createdAt: "desc" } },
     },
   });
   if (!event) notFound();
@@ -281,49 +282,100 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
       ) : null}
 
       {activeTab === "tamu" ? (
-        <Card title="Daftar Tamu">
-          <p className="mb-3 text-sm text-zinc-500">
-            Data tamu dan undangan digital dikelola oleh klien (pengantin) melalui portal klien.
-            Berikut tampilan baca-saja untuk tim internal.
-          </p>
-          {event.tamu.length === 0 ? (
-            <EmptyState message="Belum ada tamu. Klien dapat menambahkan tamu dari portal klien." />
-          ) : (
-            <div className="-m-4 overflow-x-auto">
-              <table className="tbl">
-                <thead>
-                  <tr>
-                    <th>Nama</th>
-                    <th className="hidden md:table-cell">Kategori</th>
-                    <th>Status</th>
-                    <th className="hidden md:table-cell">Kursi</th>
-                    <th>RSVP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {event.tamu.map((t) => (
-                    <tr key={t.id}>
-                      <td className="font-medium text-zinc-900">{t.nama}</td>
-                      <td className="hidden md:table-cell">{KATEGORI_LABELS[t.kategori] ?? t.kategori}</td>
-                      <td>
-                        <TamuStatusBadge status={t.status} />
-                      </td>
-                      <td className="hidden md:table-cell">{t.jumlahKursi}</td>
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <RsvpBadge status={t.rsvp?.status ?? null} />
-                          {t.rsvp?.status === "HADIR" ? (
-                            <span className="text-xs text-zinc-500">({t.rsvp.jumlahHadir} org)</span>
-                          ) : null}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="space-y-4">
+          <div
+            className={`rounded-xl border p-4 shadow-sm ${
+              event.modeQr === "SATU_QR"
+                ? "border-emerald-200 bg-emerald-50/60"
+                : "border-pink-200 bg-pink-50/60"
+            }`}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-medium tracking-wide text-zinc-500 uppercase">
+                  Mode QR Check-in
+                </p>
+                <p className="mt-0.5 font-semibold text-zinc-900">
+                  {event.modeQr === "SATU_QR"
+                    ? "1 QR untuk Semua Tamu (check-in mandiri)"
+                    : "1 Tamu 1 QR (petugas scan QR tamu)"}
+                </p>
+                <p className="mt-1 text-xs text-zinc-600">
+                  Mode QR diatur oleh klien di portal Tamu &amp; QR, atau tim internal di halaman ini.
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                {event.modeQr === "SATU_QR" && event.eventToken ? (
+                  <>
+                    <a
+                      href={`/api/qr-acara/${event.eventToken}?ukuran=1024`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary !text-xs"
+                    >
+                      QR Master
+                    </a>
+                    <a
+                      href={`/checkin/${event.eventToken}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary !text-xs"
+                    >
+                      Halaman Tamu
+                    </a>
+                  </>
+                ) : null}
+                <Link href={`/events/${event.id}/checkin`} className="btn-success !text-xs">
+                  Buka Check-in
+                </Link>
+              </div>
             </div>
-          )}
-        </Card>
+          </div>
+
+          <Card title="Daftar Tamu">
+            <p className="mb-3 text-sm text-zinc-500">
+              Data tamu dan undangan digital dikelola oleh klien (pengantin) melalui portal klien.
+              Berikut tampilan baca-saja untuk tim internal.
+            </p>
+            {event.tamu.length === 0 ? (
+              <EmptyState message="Belum ada tamu. Klien dapat menambahkan tamu dari portal klien." />
+            ) : (
+              <div className="-m-4 overflow-x-auto">
+                <table className="tbl">
+                  <thead>
+                    <tr>
+                      <th>Nama</th>
+                      <th className="hidden md:table-cell">Kategori</th>
+                      <th>Status</th>
+                      <th className="hidden md:table-cell">Kursi</th>
+                      <th>RSVP</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {event.tamu.map((t) => (
+                      <tr key={t.id}>
+                        <td className="font-medium text-zinc-900">{t.nama}</td>
+                        <td className="hidden md:table-cell">{KATEGORI_LABELS[t.kategori] ?? t.kategori}</td>
+                        <td>
+                          <TamuStatusBadge status={t.status} />
+                        </td>
+                        <td className="hidden md:table-cell">{t.jumlahKursi}</td>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            <RsvpBadge status={t.rsvp?.status ?? null} />
+                            {t.rsvp?.status === "HADIR" ? (
+                              <span className="text-xs text-zinc-500">({t.rsvp.jumlahHadir} org)</span>
+                            ) : null}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        </div>
       ) : null}
 
       {activeTab === "rekap" ? (
@@ -368,6 +420,7 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
                         <th>RSVP</th>
                         <th>Jumlah Hadir</th>
                         <th className="hidden md:table-cell">Check-in</th>
+                        <th className="hidden lg:table-cell">Sumber</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -402,6 +455,17 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
                               "-"
                             )}
                           </td>
+                          <td className="hidden lg:table-cell">
+                            {t.checkIn ? (
+                              t.checkIn.sumber === "MANDIRI" ? (
+                                <span className="badge badge-amber">Mandiri</span>
+                              ) : (
+                                <span className="badge badge-zinc">Petugas</span>
+                              )
+                            ) : (
+                              "-"
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -410,6 +474,50 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
               )}
             </div>
           </div>
+
+          {/* Walk-in hasil check-in mandiri */}
+          {event.walkIns.length > 0 ? (
+            <div className="card mt-4">
+              <div className="card-header flex items-center justify-between gap-2">
+                <h2 className="card-title">Tamu Tambahan / Walk-in</h2>
+                <span className="badge badge-amber">
+                  {event.walkIns.length} isian • {event.walkIns.reduce((s, w) => s + w.jumlah, 0)} orang
+                </span>
+              </div>
+              <div className="card-body">
+                <p className="mb-3 text-xs text-zinc-500">
+                  Tamu yang check-in mandiri lewat QR master namun tidak ada di daftar undangan.
+                </p>
+                <div className="-m-4 overflow-x-auto">
+                  <table className="tbl">
+                    <thead>
+                      <tr>
+                        <th>Waktu</th>
+                        <th>Nama</th>
+                        <th>Jumlah</th>
+                        <th className="hidden md:table-cell">Keterangan</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {event.walkIns.map((w) => (
+                        <tr key={w.id}>
+                          <td className="whitespace-nowrap font-mono text-xs">
+                            {new Intl.DateTimeFormat("id-ID", {
+                              dateStyle: "short",
+                              timeStyle: "short",
+                            }).format(w.createdAt)}
+                          </td>
+                          <td className="font-medium text-zinc-900">{w.nama}</td>
+                          <td>{w.jumlah} orang</td>
+                          <td className="hidden md:table-cell">{w.keterangan ?? "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

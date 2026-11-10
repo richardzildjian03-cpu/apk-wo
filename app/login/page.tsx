@@ -77,25 +77,9 @@ export default async function LoginPage() {
           </div>
         </div>
 
-        <div className="card mt-4">
-          <div className="card-body text-xs text-zinc-500">
-            <p className="mb-2 font-semibold text-zinc-600">Akun demo (password: password123)</p>
-            <ul className="grid gap-1">
-              <li>
-                <span className="font-medium text-zinc-700">Bos</span> — bos@wo.id
-              </li>
-              <li>
-                <span className="font-medium text-zinc-700">Leader WO</span> — leader@wo.id
-              </li>
-              <li>
-                <span className="font-medium text-zinc-700">Staff Admin</span> — staff@wo.id
-              </li>
-              <li>
-                <span className="font-medium text-zinc-700">Klien (Pengantin)</span> — klien@wo.id
-              </li>
-            </ul>
-          </div>
-        </div>
+        <p className="mt-5 text-center text-[11px] text-zinc-400">
+          &copy; {new Date().getFullYear()} {siteName}. Seluruh hak cipta dilindungi.
+        </p>
       </div>
     </main>
   );

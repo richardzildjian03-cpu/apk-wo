@@ -15,7 +15,7 @@ export default async function ReportsPage() {
     orderBy: { tanggal: "desc" },
     include: {
       klien: true,
-      tamu: { include: { rsvp: true } },
+      tamu: { include: { rsvp: true, checkIn: true } },
     },
   });
 
@@ -35,6 +35,7 @@ export default async function ReportsPage() {
             const tidak = event.tamu.filter((t) => t.rsvp?.status === "TIDAK");
             const kosong = event.tamu.filter((t) => !t.rsvp);
             const totalOrangHadir = hadir.reduce((s, t) => s + (t.rsvp?.jumlahHadir ?? 0), 0);
+            const checkedIn = event.tamu.filter((t) => t.checkIn).length;
 
             return (
               <div key={event.id} className="card">
@@ -55,6 +56,10 @@ export default async function ReportsPage() {
                     </Badge>
                     <Badge variant="red">Tidak: {tidak.length}</Badge>
                     <Badge variant="violet">Belum menjawab: {kosong.length}</Badge>
+                    <Badge variant="green">Check-in: {checkedIn}</Badge>
+                    <Badge variant="amber">
+                      Mode QR: {event.modeQr === "SATU_QR" ? "1 QR (mandiri)" : "Per Tamu"}
+                    </Badge>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Link href={`/events/${event.id}?tab=rekap`} className="btn-secondary">

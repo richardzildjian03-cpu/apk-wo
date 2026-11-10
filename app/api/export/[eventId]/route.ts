@@ -30,6 +30,7 @@ export async function GET(
     include: {
       tamu: { include: { rsvp: true, checkIn: true }, orderBy: { nama: "asc" } },
       pengantin: true,
+      walkIns: { orderBy: { createdAt: "asc" } },
     },
   });
   if (!event) {
@@ -56,6 +57,7 @@ export async function GET(
     "Jumlah Hadir",
     "RSVP Diperbarui",
     "Waktu Check-in",
+    "Sumber Check-in",
   ];
 
   const rows = event.tamu.map((t, i) => [
@@ -75,12 +77,32 @@ export async function GET(
           t.checkIn.waktuCheckIn,
         )
       : "",
+    t.checkIn ? (t.checkIn.sumber === "MANDIRI" ? "Mandiri (tamu)" : "Petugas") : "",
   ]);
 
   const totalTamu = event.tamu.length;
   const hadir = event.tamu.filter((t) => t.rsvp?.status === "HADIR");
   const totalOrangHadir = hadir.reduce((s, t) => s + (t.rsvp?.jumlahHadir ?? 0), 0);
   const vipHadir = hadir.filter((t) => t.status === "VIP").length;
+  const checkedIn = event.tamu.filter((t) => t.checkIn);
+  const checkInMandiri = checkedIn.filter((t) => t.checkIn!.sumber === "MANDIRI").length;
+  const walkInOrang = event.walkIns.reduce((s, w) => s + w.jumlah, 0);
+
+  const walkInBlock =
+    event.walkIns.length > 0
+      ? [
+          [],
+          ["Tamu Tambahan / Walk-in"],
+          ["No", "Nama", "Jumlah Orang", "Keterangan", "Waktu"],
+          ...event.walkIns.map((w, i) => [
+            String(i + 1),
+            w.nama,
+            String(w.jumlah),
+            w.keterangan ?? "",
+            new Intl.DateTimeFormat("id-ID", { dateStyle: "short", timeStyle: "short" }).format(w.createdAt),
+          ]),
+        ]
+      : [];
 
   const summary = [
     [],
@@ -88,18 +110,21 @@ export async function GET(
     ["Nama Acara", event.namaAcara],
     ["Tanggal", new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(event.tanggal)],
     ["Lokasi", event.lokasi],
-    ["Total Tamu", String(totalTamu)],
+    ["Mode QR", event.modeQr === "SATU_QR" ? "1 QR untuk Semua Tamu" : "1 Tamu 1 QR"],
+    ["Total Tamu Terdaftar", String(totalTamu)],
     ["Konfirmasi Hadir", `${hadir.length} tamu (${totalOrangHadir} orang)`],
     ["VIP Hadir", String(vipHadir)],
     ["Tidak Hadir", String(event.tamu.filter((t) => t.rsvp?.status === "TIDAK").length)],
-    ["Tidak Hadir", String(event.tamu.filter((t) => t.rsvp?.status === "TIDAK").length)],
     ["Belum Menjawab", String(event.tamu.filter((t) => !t.rsvp).length)],
-    ["Sudah Check-in", String(event.tamu.filter((t) => t.checkIn).length)],
+    ["Sudah Check-in", `${checkedIn.length} tamu (${checkInMandiri} mandiri)`],
+    ["Tamu Tambahan (Walk-in)", `${event.walkIns.length} isian (${walkInOrang} orang)`],
   ];
 
   const csv =
     "\uFEFF" +
-    [...summary, [], header, ...rows].map((row) => row.map(csvEscape).join(";")).join("\r\n");
+    [...summary, [], header, ...rows, ...walkInBlock]
+      .map((row) => row.map(csvEscape).join(";"))
+      .join("\r\n");
 
   const filename = `rekap-kehadiran-${event.namaAcara.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}.csv`;
 

@@ -42,12 +42,19 @@ next-env.d.ts
 
 # Database
 db/
+*.db
+*.db-journal
+*.db.backup-*
 prisma/dev.db
 prisma/dev.db-journal
-*.db
 public/uploads/paket/*
 !public/uploads/paket/.gitkeep
 public/uploads/settings/*
 !public/uploads/settings/.gitkeep
 
+# log & arsip lokal
+dev-server.log
+*.zip
+
+# folder nyasar (pernah terbawa zip)
 wo-app/

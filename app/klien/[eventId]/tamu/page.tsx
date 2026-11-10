@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+﻿import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
@@ -9,8 +9,10 @@ import {
   updateTamuAction,
   deleteTamuAction,
 } from "@/lib/actions/guests";
+import { setModeQrAction, regenerateEventTokenAction } from "@/lib/actions/qrmode";
 import { ActionForm, SubmitButton, ConfirmSubmit, CopyButton } from "@/components/forms";
 import { Card, EmptyState, TamuStatusBadge, RsvpBadge, StatCard } from "@/components/ui";
+import { ModeQrPanel } from "@/components/mode-qr-panel";
 
 type Props = {
   params: Promise<{ eventId: string }>;
@@ -43,6 +45,7 @@ export default async function KlienTamuPage({ params }: Props) {
   const vipCount = tamuList.filter((t) => t.status === "VIP").length;
   const kursiTotal = tamuList.reduce((s, t) => s + t.jumlahKursi, 0);
   const sudahRsvp = tamuList.filter((t) => t.rsvp).length;
+  const modeQr = event.modeQr || "PER_TAMU";
 
   return (
     <div className="space-y-6">
@@ -52,6 +55,15 @@ export default async function KlienTamuPage({ params }: Props) {
         <StatCard label="Total Kursi" value={kursiTotal} variant="pink" />
         <StatCard label="Sudah RSVP" value={`${sudahRsvp}/${tamuList.length}`} variant="green" />
       </div>
+
+      <ModeQrPanel
+        eventId={event.id}
+        modeAktif={modeQr}
+        eventToken={event.eventToken ?? ""}
+        origin={base}
+        setModeAction={setModeQrAction}
+        regenerateAction={regenerateEventTokenAction}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <details className="card lg:col-span-1" open={tamuList.length === 0}>
@@ -94,7 +106,9 @@ export default async function KlienTamuPage({ params }: Props) {
               </div>
               <SubmitButton className="w-full">Tambah Tamu</SubmitButton>
               <p className="text-xs text-zinc-400">
-                QR code undangan dibuat otomatis untuk setiap tamu.
+                {modeQr === "SATU_QR"
+                  ? "Mode 1 QR aktif â€” QR pribadi tetap dibuat sebagai cadangan (input manual petugas)."
+                  : "QR code undangan dibuat otomatis untuk setiap tamu."}
               </p>
             </ActionForm>
           </div>

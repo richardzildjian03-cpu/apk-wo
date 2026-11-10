@@ -11,14 +11,14 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h1 className="text-xl font-semibold text-zinc-900">{title}</h1>
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-900 md:text-2xl">{title}</h1>
         {description ? (
           <p className="mt-1 text-sm text-zinc-500">{description}</p>
         ) : null}
       </div>
-      {children ? <div className="flex flex-wrap gap-2">{children}</div> : null}
+      {children ? <div className="flex flex-wrap items-center gap-2">{children}</div> : null}
     </div>
   );
 }
@@ -166,6 +166,64 @@ export function Tabs({
           </Link>
         ),
       )}
+    </div>
+  );
+}
+
+/* ---------- Loading skeletons ---------- */
+/* Dipakai oleh loading.tsx di tiap route supaya navigasi terasa instan —
+   kerangka tampil < 1 frame, data menyusul tanpa layar putih. */
+
+export function Skeleton({ className = "" }: { className?: string }) {
+  return <div className={`skeleton ${className}`} />;
+}
+
+export function SkeletonStats({ count = 4 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="stat-zinc">
+          <div className="space-y-2 px-5 py-4">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-7 w-14" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonTable({ rows = 6, cols = 5 }: { rows?: number; cols?: number }) {
+  return (
+    <div className="card">
+      <div className="card-header">
+        <Skeleton className="h-5 w-40" />
+      </div>
+      <div className="divide-y divide-pink-50">
+        {Array.from({ length: rows }).map((_, r) => (
+          <div key={r} className="flex items-center gap-4 px-5 py-3.5">
+            {Array.from({ length: cols }).map((_, c) => (
+              <Skeleton
+                key={c}
+                className={`h-4 ${c === 0 ? "w-40" : c === cols - 1 ? "ml-auto w-16" : "w-24"}`}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonPageHeader() {
+  return (
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="space-y-2">
+        <Skeleton className="h-6 w-52" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <Skeleton className="h-9 w-28" />
     </div>
   );
 }

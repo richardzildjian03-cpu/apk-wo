@@ -3,6 +3,12 @@
 :root {
   --background: #fff5f9;
   --foreground: #27272a;
+  --brand: #db2777;
+  --brand-dark: #be185d;
+  --brand-soft: #fce7f3;
+  --accent: #059669;
+  --accent-soft: #d1fae5;
+  --radius: 0.85rem;
 }
 
 @theme inline {
@@ -10,27 +16,71 @@
   --color-foreground: var(--foreground);
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background: linear-gradient(180deg, #fdf2f8 0%, #ffffff 45%, #d1fae5 100%);
   background-attachment: fixed;
   color: var(--foreground);
+  min-height: 100dvh;
+}
+
+/* Fokus keyboard yang jelas — aksesibilitas + terasa lebih responsif */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Scrollbar tipis agar layout tidak "membesar" saat halaman panjang */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #f9a8d4 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #f9a8d4;
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #f472b6;
+}
+
+/* Hormati preferensi user yang minta minim animasi */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ---------- Buttons ---------- */
 .btn-primary {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-pink-500 to-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-pink-500/30 transition hover:from-pink-600 hover:to-pink-700 hover:shadow-lg hover:shadow-pink-500/40 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-pink-500 to-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-pink-500/30 transition-all duration-150 hover:from-pink-600 hover:to-pink-700 hover:shadow-lg hover:shadow-pink-500/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
 }
 .btn-secondary {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-pink-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:border-pink-400 hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-pink-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-all duration-150 hover:border-pink-400 hover:bg-pink-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
 }
 .btn-danger {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-all duration-150 hover:bg-red-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
 }
 .btn-success {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-emerald-600/30 transition hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/40 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-emerald-600/30 transition-all duration-150 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
 }
 .btn-link {
-  @apply cursor-pointer text-sm font-semibold text-pink-600 hover:underline;
+  @apply cursor-pointer text-sm font-semibold text-pink-600 transition hover:text-pink-700 hover:underline;
 }
 
 /* ---------- Forms ---------- */
@@ -38,10 +88,19 @@ body {
   @apply mb-1 block text-sm font-medium text-zinc-700;
 }
 .input {
-  @apply w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:outline-none;
+  @apply w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 transition placeholder:text-zinc-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:outline-none disabled:bg-zinc-50 disabled:text-zinc-400;
 }
 select.input {
   @apply cursor-pointer;
+}
+textarea.input {
+  @apply resize-y;
+}
+/* Input di layar sentuh minimal 16px agar iOS tidak auto-zoom saat fokus */
+@media (max-width: 767px) {
+  .input {
+    font-size: 16px;
+  }
 }
 
 /* ---------- Cards & layout ---------- */
@@ -74,6 +133,9 @@ select.input {
 .tbl tbody td {
   @apply border-b border-pink-50 bg-white px-4 py-2.5 text-zinc-700;
 }
+.tbl tbody tr {
+  @apply transition-colors duration-100;
+}
 .tbl tbody tr:hover {
   @apply bg-pink-50;
 }
@@ -103,16 +165,16 @@ select.input {
 
 /* ---------- Stat cards ---------- */
 .stat-pink {
-  @apply rounded-xl border border-pink-200 bg-gradient-to-br from-pink-50 to-pink-100/70 shadow-sm;
+  @apply rounded-xl border border-pink-200 bg-gradient-to-br from-pink-50 to-pink-100/70 shadow-sm transition-shadow duration-150 hover:shadow-md;
 }
 .stat-green {
-  @apply rounded-xl border border-emerald-300 bg-gradient-to-br from-emerald-100 to-emerald-200/70 shadow-sm;
+  @apply rounded-xl border border-emerald-300 bg-gradient-to-br from-emerald-100 to-emerald-200/70 shadow-sm transition-shadow duration-150 hover:shadow-md;
 }
 .stat-violet {
-  @apply rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/70 shadow-sm;
+  @apply rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/70 shadow-sm transition-shadow duration-150 hover:shadow-md;
 }
 .stat-zinc {
-  @apply rounded-xl border border-zinc-200 bg-gradient-to-br from-zinc-50 to-white shadow-sm;
+  @apply rounded-xl border border-zinc-200 bg-gradient-to-br from-zinc-50 to-white shadow-sm transition-shadow duration-150 hover:shadow-md;
 }
 
 /* ---------- Sidebar internal ---------- */
@@ -130,6 +192,11 @@ select.input {
 }
 .nav-item-dark-sm-active {
   @apply shrink-0 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-pink-700 shadow-md;
+}
+
+/* ---------- Loading skeleton ---------- */
+.skeleton {
+  @apply animate-pulse rounded-md bg-gradient-to-r from-pink-100 via-pink-50 to-pink-100;
 }
 
 /* ---------- Invitation (public) — tetap lembut ---------- */
@@ -163,5 +230,16 @@ select.input {
   }
   body {
     background: #ffffff;
+  }
+  .card {
+    box-shadow: none;
+    border-color: #e5e7eb;
+  }
+  /* Sembunyikan elemen interaktif saat cetak rekap */
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .btn-success {
+    display: none !important;
   }
 }

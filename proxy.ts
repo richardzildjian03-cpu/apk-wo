@@ -11,6 +11,9 @@ const PROTECTED_PREFIXES = [
   "/klien",
 ];
 
+// Rute publik yang tidak butuh sesi: /undangan/[token] (undangan digital),
+// /checkin/[eventToken] (check-in mandiri tamu), /login, dan /api publik.
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = request.cookies.has("wo_session");
