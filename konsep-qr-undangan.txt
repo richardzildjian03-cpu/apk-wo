@@ -1,0 +1,55 @@
+// Ringkasan konsep QR Undangan Digital & Alur Check-in
+
+// 1. STRUKTUR QR UNTUK UNDANGAN DIGITAL
+// ------------------------------------
+// Setiap tamu memiliki qrToken unik di database (tamu.qrToken)
+// QR mengarah ke: https://domain/undangan/{qrToken}
+// Atau PNG QR: https://domain/api/qr/{qrToken}
+
+// Isi halaman /undangan/{qrToken}:
+// - Nama tamu + detail undangan
+// - Tombol "Masuk/Check-in" → ke halaman check-in mandiri
+// - Tombol "Unduh QR" → download PNG
+// - Tombol "Bagikan ke WA" → tautan undangan ke WhatsApp
+
+// 2. ALUR CHECK-IN MODE PER_TAMU (1 Tamu 1 QR)
+// -------------------------------------------
+// A. Tamu punya undangan digital (sudah diterima dari email/WA):
+//   - Buka tautan undangan di HP
+//   - Tekan "Check-in" atau scan QR di undangan
+//   - Halaman terbuka: isi nama (atau langsung jika sudah terverifikasi)
+//   - Tekan "Konfirmasi Kehadiran" → notif toast di atas layar
+//
+// B. Tamu TIDAK punya undangan digital:
+//   - Buka halaman check-in manual: /checkin/[eventToken]
+//   - Pilih "Input Manual" atau scan QR cadangan
+//   - Ketik nama → check-in sebagai walk-in
+//   - Terdatat di tabel WalkIn (bisa dilaporkan ke petugas)
+
+// 3. ALUR CHECK-IN MODE SATU_QR (1 QR untuk Semua Tamu)
+// -----------------------------------------------------
+// A. QR Master Acara ditempatkan di meja penerimaan:
+//   - Tamu scan QR → terbuka halaman "Tulis Nama Anda"
+//   - Tamu isi nama sendiri → check-in tercatat
+//
+// B. Tamu yang sudah punya undangan pribadi:
+//   - Bisa scan QR individual di undangan mereka
+//   - Atau input manual token/tautan
+
+// 4. FITUR TAMBAHAN YANG DIMINTA
+// -----------------------------
+// - Undangan digital dari client: klien upload file undangan/sertifikat
+// - Manual drop QR oleh admin: regenerate event token => QR lama tidak valid
+// - Walk-in tamu: catat di tabel WalkIn, tetap bisa check-in
+// - Fallback: jika QR tidak terbaca, input manual token
+
+// 5. ANTI ERROR / LAG (sudah divalidasi)
+// -------------------------------------
+// - Semua URL pakai baseUrlFromHeaders (APP_URL / X-Forwarded-Host)
+// - Kamera butuh HTTPS/localhost (tunnel sudah oke)
+// - Rate limit 20 submit/menit per IP
+// - Toast notifikasi di atas layar (sudah test HP)
+// - window.scrollTo(0,0) saat hasil muncul
+// - Form disembunyikan setelah sukses
+
+export { };

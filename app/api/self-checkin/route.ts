@@ -59,8 +59,13 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { eventToken?: unknown; nama?: unknown; jumlah?: unknown; keterangan?: unknown } | null =
-    null;
+  let body: {
+    eventToken?: unknown;
+    qrToken?: unknown;
+    nama?: unknown;
+    jumlah?: unknown;
+    keterangan?: unknown;
+  } | null = null;
   try {
     body = await request.json();
   } catch {
@@ -68,11 +73,12 @@ export async function POST(request: Request) {
   }
 
   const eventToken = String(body?.eventToken ?? "").trim();
+  const qrToken = String(body?.qrToken ?? "").trim();
   const nama = String(body?.nama ?? "").trim();
   const jumlahRaw = Number(body?.jumlah ?? 1);
   const keterangan = String(body?.keterangan ?? "").trim() || null;
 
-  if (!eventToken || !nama) {
+  if (!eventToken || (!nama && !qrToken)) {
     return NextResponse.json<SelfCheckinResponse>(
       { ok: false, message: "Nama wajib diisi." },
       { status: 400 },
@@ -101,7 +107,21 @@ export async function POST(request: Request) {
 
   const jumlah = Number.isFinite(jumlahRaw) ? Math.min(Math.max(Math.round(jumlahRaw), 1), 20) : 1;
 
-  const tamu = await findTamuByName(event.id, nama);
+  // Tamu yang sudah punya undangan digital (qrToken) langsung dikenali —
+  // tidak perlu menulis nama manual lagi, cukup konfirmasi.
+  const tamu = qrToken
+    ? await prisma.tamu.findUnique({
+        where: { qrToken },
+        include: { rsvp: true, checkIn: true },
+      })
+    : await findTamuByName(event.id, nama);
+
+  if (tamu && tamu.eventId !== event.id) {
+    return NextResponse.json<SelfCheckinResponse>(
+      { ok: false, message: "Undangan ini bukan untuk acara tersebut." },
+      { status: 400 },
+    );
+  }
 
   // --- Tamu terdaftar ---
   if (tamu) {

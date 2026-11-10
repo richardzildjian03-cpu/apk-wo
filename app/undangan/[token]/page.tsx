@@ -5,6 +5,7 @@ import { formatTanggal } from "@/lib/constants";
 import { getSetting } from "@/lib/settings";
 import { submitRsvpAction } from "@/lib/actions/guests";
 import { ActionForm, SubmitButton } from "@/components/forms";
+import { UndanganCheckin } from "@/components/undangan-checkin";
 import { Badge } from "@/components/ui";
 
 type Props = {
@@ -258,6 +259,14 @@ export default async function UndanganPage({ params }: Props) {
             <SubmitButton className="w-full">Kirim Konfirmasi</SubmitButton>
           </ActionForm>
         </section>
+
+        {/* Check-in Sekarang */}
+        <UndanganCheckin
+          eventToken={event.eventToken ?? ""}
+          qrToken={tamu.qrToken}
+          namaTamu={tamu.nama}
+          maxKursi={tamu.jumlahKursi}
+        />
 
         <footer className="mt-10 pb-6 text-center">
           <p className="inv-script text-2xl text-pink-600">Terima kasih</p>

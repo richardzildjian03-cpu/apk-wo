@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ResultToast } from "@/components/result-toast";
 
 type ScanResult = {
   ok: boolean;
@@ -179,8 +180,28 @@ export function CheckinScanner({
     };
   }, []);
 
+  // Hasil scan harus langsung terlihat — gulir ke atas saat hasil muncul.
+  useEffect(() => {
+    if (!result) return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [result]);
+
+  const toastTone = result?.ok ? (result.duplicate ? "warning" : "success") : "error";
+  const toastTitle = result?.ok
+    ? result.duplicate
+      ? "Sudah check-in sebelumnya"
+      : "Check-in berhasil"
+    : "Check-in gagal";
+
   return (
     <div className="card">
+      <ResultToast
+        open={result !== null}
+        tone={toastTone}
+        title={toastTitle}
+        message={result?.message ?? ""}
+        onClose={() => setResult(null)}
+      />
       <div className="card-header-green flex flex-wrap items-center justify-between gap-2">
         <h2 className="card-title-white">Scan QR Tamu</h2>
         <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold text-white">
@@ -188,55 +209,7 @@ export function CheckinScanner({
         </span>
       </div>
       <div className="card-body space-y-4">
-        {/* Counter */}
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-3">
-            <p className="text-xs text-zinc-500">Total Tamu</p>
-            <p className="text-xl font-semibold text-zinc-900">{totalTamu}</p>
-          </div>
-          <div className="rounded-lg border border-emerald-700 bg-emerald-600 px-2 py-3 shadow-md shadow-emerald-600/30">
-            <p className="text-xs font-medium text-emerald-100">Sudah Check-in</p>
-            <p className="text-xl font-bold text-white">{checkedIn}</p>
-          </div>
-          <div className="rounded-lg border border-pink-300 bg-pink-100 px-2 py-3">
-            <p className="text-xs font-medium text-pink-700">Belum Check-in</p>
-            <p className="text-xl font-semibold text-pink-800">{totalTamu - checkedIn}</p>
-          </div>
-        </div>
-
-        {/* Kamera — div ini TIDAK boleh punya children dari React;
-            html5-qrcode menyuntikkan elemen video/canvas-nya sendiri di sini */}
-        <div className="relative mx-auto w-full max-w-xs">
-          <div
-            id="checkin-reader"
-            className={`w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-900 ${
-              scanning ? "min-h-64" : "min-h-16"
-            }`}
-          />
-          {!scanning ? (
-            <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-xs text-zinc-400">
-              Kamera belum aktif — tekan tombol &quot;Mulai Scan&quot;
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex justify-center gap-2">
-          {scanning ? (
-            <button type="button" className="btn-secondary" onClick={() => void stopScanner()}>
-              Hentikan Kamera
-            </button>
-          ) : (
-            <button type="button" className="btn-success" onClick={() => void startScanner()}>
-              Mulai Scan
-            </button>
-          )}
-        </div>
-
-        {cameraError ? (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">{cameraError}</p>
-        ) : null}
-
-        {/* Hasil scan */}
+        {/* Hasil scan — ditaruh paling atas agar langsung terlihat di HP */}
         {result ? (
           <div
             className={`rounded-xl border p-4 text-center ${
@@ -246,6 +219,8 @@ export function CheckinScanner({
                   ? "border-amber-300 bg-amber-50"
                   : "border-red-300 bg-red-50"
             }`}
+            role="status"
+            aria-live="polite"
           >
             <p
               className={`text-xs font-semibold tracking-wide uppercase ${
@@ -294,6 +269,54 @@ export function CheckinScanner({
               {result.message}
             </p>
           </div>
+        ) : null}
+
+        {/* Counter */}
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-3">
+            <p className="text-xs text-zinc-500">Total Tamu</p>
+            <p className="text-xl font-semibold text-zinc-900">{totalTamu}</p>
+          </div>
+          <div className="rounded-lg border border-emerald-700 bg-emerald-600 px-2 py-3 shadow-md shadow-emerald-600/30">
+            <p className="text-xs font-medium text-emerald-100">Sudah Check-in</p>
+            <p className="text-xl font-bold text-white">{checkedIn}</p>
+          </div>
+          <div className="rounded-lg border border-pink-300 bg-pink-100 px-2 py-3">
+            <p className="text-xs font-medium text-pink-700">Belum Check-in</p>
+            <p className="text-xl font-semibold text-pink-800">{totalTamu - checkedIn}</p>
+          </div>
+        </div>
+
+        {/* Kamera — div ini TIDAK boleh punya children dari React;
+            html5-qrcode menyuntikkan elemen video/canvas-nya sendiri di sini */}
+        <div className="relative mx-auto w-full max-w-xs">
+          <div
+            id="checkin-reader"
+            className={`w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-900 ${
+              scanning ? "min-h-64" : "min-h-16"
+            }`}
+          />
+          {!scanning ? (
+            <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-xs text-zinc-400">
+              Kamera belum aktif — tekan tombol &quot;Mulai Scan&quot;
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex justify-center gap-2">
+          {scanning ? (
+            <button type="button" className="btn-secondary" onClick={() => void stopScanner()}>
+              Hentikan Kamera
+            </button>
+          ) : (
+            <button type="button" className="btn-success" onClick={() => void startScanner()}>
+              Mulai Scan
+            </button>
+          )}
+        </div>
+
+        {cameraError ? (
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">{cameraError}</p>
         ) : null}
 
         {/* Input manual */}

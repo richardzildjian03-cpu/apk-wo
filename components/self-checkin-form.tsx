@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ResultToast } from "@/components/result-toast";
 
 type TamuOption = {
   nama: string;
@@ -142,138 +143,30 @@ export function SelfCheckinForm({
     inputRef.current?.focus();
   }, []);
 
+  // Begitu hasil masuk, pastikan notifikasi di atas layar langsung terlihat.
+  useEffect(() => {
+    if (!hasil) return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [hasil]);
+
+  const tone = hasil?.ok ? (hasil.duplicate ? "warning" : "success") : "error";
+  const judulToast = hasil?.ok
+    ? hasil.duplicate
+      ? "Sudah tercatat sebelumnya"
+      : "Check-in berhasil"
+    : "Check-in gagal";
+
   return (
     <div className="space-y-5">
-      {/* Form konfirmasi kehadiran — tamu sudah sampai di sini setelah scan QR acara */}
-      <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm">
-        <p className="text-xs tracking-[0.25em] text-pink-400 uppercase">Konfirmasi Kehadiran</p>
-        <h2 className="inv-serif mt-1 text-lg font-semibold text-zinc-900">
-          Tulis Nama Anda
-        </h2>
-        <p className="mt-1 text-sm text-zinc-500">
-          Nama sesuai undangan agar kehadiran Anda langsung tercatat.
-        </p>
+      <ResultToast
+        open={hasil !== null}
+        tone={tone}
+        title={judulToast}
+        message={hasil?.message ?? ""}
+        onClose={() => setHasil(null)}
+      />
 
-        <form
-          className="mt-4 space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (mengirim) return;
-            void kirim(nama, jumlah);
-          }}
-        >
-          <div className="relative">
-            <label htmlFor="nama" className="label">
-              Nama Anda
-            </label>
-            <input
-              id="nama"
-              ref={inputRef}
-              className="input"
-              value={nama}
-              autoComplete="off"
-              enterKeyHint="search"
-              placeholder="cth: Budi Santoso"
-              onChange={(e) => {
-                setNama(e.target.value);
-                setShowSaran(true);
-              }}
-              onFocus={() => setShowSaran(true)}
-              onBlur={() => {
-                // Tunda agar klik pada saran tetap terdaftar.
-                setTimeout(() => setShowSaran(false), 150);
-              }}
-              required
-            />
-
-            {showSaran && saran.length > 0 && !cocokPersis ? (
-              <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-pink-200 bg-white shadow-lg">
-                {saran.map((t) => (
-                  <li key={t.nama}>
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-pink-50"
-                      onClick={() => {
-                        setNama(t.nama);
-                        setJumlah(t.jumlahKursi);
-                        setShowSaran(false);
-                      }}
-                    >
-                      <span className="font-medium text-zinc-800">
-                        {t.nama}
-                        {t.status === "VIP" ? (
-                          <span className="ml-2 badge badge-violet">VIP</span>
-                        ) : null}
-                      </span>
-                      <span className="text-xs text-zinc-400">{t.jumlahKursi} kursi</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-
-          {cocokPersis ? (
-            <div
-              className={`rounded-xl border px-4 py-3 text-sm ${
-                cocokPersis.sudahHadir
-                  ? "border-amber-300 bg-amber-50 text-amber-800"
-                  : "border-emerald-300 bg-emerald-50 text-emerald-800"
-              }`}
-            >
-              {cocokPersis.sudahHadir ? (
-                <>Nama ini sudah tercatat hadir sebelumnya.</>
-              ) : (
-                <>
-                  Ditemukan: <strong>{cocokPersis.nama}</strong>
-                  {cocokPersis.status === "VIP" ? " (Tamu VIP)" : ""} — {cocokPersis.jumlahKursi} kursi
-                </>
-              )}
-            </div>
-          ) : nama.trim().length > 2 ? (
-            <p className="rounded-lg bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
-              Nama tidak ada di daftar undangan. Anda tetap bisa konfirmasi — kehadiran akan dicatat
-              sebagai tamu tambahan.
-            </p>
-          ) : null}
-
-          <div>
-            <label htmlFor="jumlah" className="label">
-              Jumlah orang yang hadir {cocokPersis ? `(maks. ${cocokPersis.jumlahKursi} kursi)` : ""}
-            </label>
-            <input
-              id="jumlah"
-              type="number"
-              min={1}
-              max={cocokPersis?.jumlahKursi ?? 20}
-              className="input"
-              value={jumlah}
-              onChange={(e) => setJumlah(Number(e.target.value) || 1)}
-            />
-          </div>
-
-          {!cocokPersis && nama.trim().length > 2 ? (
-            <div>
-              <label htmlFor="keterangan" className="label">
-                Keterangan tambahan (opsional)
-              </label>
-              <input
-                id="keterangan"
-                className="input"
-                value={keterangan}
-                placeholder="cth: Tamu pendamping Bu Rina"
-                onChange={(e) => setKeterangan(e.target.value)}
-              />
-            </div>
-          ) : null}
-
-          <button type="submit" disabled={mengirim || !nama.trim()} className="btn-primary w-full">
-            {mengirim ? "Menyimpan..." : "Konfirmasi Kehadiran"}
-          </button>
-        </form>
-      </div>
-
-      {/* Hasil */}
+      {/* Hasil — diletakkan di atas form agar langsung terlihat setelah konfirmasi */}
       {hasil ? (
         <div
           className={`rounded-2xl border p-5 text-center shadow-sm ${
@@ -327,9 +220,148 @@ export function SelfCheckinForm({
             <button type="button" className="btn-secondary mt-4" onClick={kirimLagi}>
               Isi Kehadiran Lain
             </button>
-          ) : null}
+          ) : (
+            <button
+              type="button"
+              className="btn-secondary mt-4"
+              onClick={() => setHasil(null)}
+            >
+              Coba Lagi
+            </button>
+          )}
         </div>
       ) : null}
+
+      {/* Form konfirmasi kehadiran — disembunyikan setelah sukses agar layar bersih */}
+      {hasil?.ok ? null : (
+        <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm">
+          <p className="text-xs tracking-[0.25em] text-pink-400 uppercase">Konfirmasi Kehadiran</p>
+          <h2 className="inv-serif mt-1 text-lg font-semibold text-zinc-900">
+            Tulis Nama Anda
+          </h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Nama sesuai undangan agar kehadiran Anda langsung tercatat.
+          </p>
+
+          <form
+            className="mt-4 space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (mengirim) return;
+              void kirim(nama, jumlah);
+            }}
+          >
+            <div className="relative">
+              <label htmlFor="nama" className="label">
+                Nama Anda
+              </label>
+              <input
+                id="nama"
+                ref={inputRef}
+                className="input"
+                value={nama}
+                autoComplete="off"
+                enterKeyHint="search"
+                placeholder="cth: Budi Santoso"
+                onChange={(e) => {
+                  setNama(e.target.value);
+                  setShowSaran(true);
+                }}
+                onFocus={() => setShowSaran(true)}
+                onBlur={() => {
+                  // Tunda agar klik pada saran tetap terdaftar.
+                  setTimeout(() => setShowSaran(false), 150);
+                }}
+                required
+              />
+
+              {showSaran && saran.length > 0 && !cocokPersis ? (
+                <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-pink-200 bg-white shadow-lg">
+                  {saran.map((t) => (
+                    <li key={t.nama}>
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-pink-50"
+                        onClick={() => {
+                          setNama(t.nama);
+                          setJumlah(t.jumlahKursi);
+                          setShowSaran(false);
+                        }}
+                      >
+                        <span className="font-medium text-zinc-800">
+                          {t.nama}
+                          {t.status === "VIP" ? (
+                            <span className="ml-2 badge badge-violet">VIP</span>
+                          ) : null}
+                        </span>
+                        <span className="text-xs text-zinc-400">{t.jumlahKursi} kursi</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+
+            {cocokPersis ? (
+              <div
+                className={`rounded-xl border px-4 py-3 text-sm ${
+                  cocokPersis.sudahHadir
+                    ? "border-amber-300 bg-amber-50 text-amber-800"
+                    : "border-emerald-300 bg-emerald-50 text-emerald-800"
+                }`}
+              >
+                {cocokPersis.sudahHadir ? (
+                  <>Nama ini sudah tercatat hadir sebelumnya.</>
+                ) : (
+                  <>
+                    Ditemukan: <strong>{cocokPersis.nama}</strong>
+                    {cocokPersis.status === "VIP" ? " (Tamu VIP)" : ""} — {cocokPersis.jumlahKursi} kursi
+                  </>
+                )}
+              </div>
+            ) : nama.trim().length > 2 ? (
+              <p className="rounded-lg bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
+                Nama tidak ada di daftar undangan. Anda tetap bisa konfirmasi — kehadiran akan dicatat
+                sebagai tamu tambahan.
+              </p>
+            ) : null}
+
+            <div>
+              <label htmlFor="jumlah" className="label">
+                Jumlah orang yang hadir {cocokPersis ? `(maks. ${cocokPersis.jumlahKursi} kursi)` : ""}
+              </label>
+              <input
+                id="jumlah"
+                type="number"
+                min={1}
+                max={cocokPersis?.jumlahKursi ?? 20}
+                className="input"
+                value={jumlah}
+                onChange={(e) => setJumlah(Number(e.target.value) || 1)}
+              />
+            </div>
+
+            {!cocokPersis && nama.trim().length > 2 ? (
+              <div>
+                <label htmlFor="keterangan" className="label">
+                  Keterangan tambahan (opsional)
+                </label>
+                <input
+                  id="keterangan"
+                  className="input"
+                  value={keterangan}
+                  placeholder="cth: Tamu pendamping Bu Rina"
+                  onChange={(e) => setKeterangan(e.target.value)}
+                />
+              </div>
+            ) : null}
+
+            <button type="submit" disabled={mengirim || !nama.trim()} className="btn-primary w-full">
+              {mengirim ? "Menyimpan..." : "Konfirmasi Kehadiran"}
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
