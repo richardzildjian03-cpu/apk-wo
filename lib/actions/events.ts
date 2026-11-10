@@ -7,6 +7,7 @@ import type { ActionState } from "@/lib/types";
 import type { SessionUser } from "@/lib/auth";
 import type { Event } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 async function getEventForUser(
   session: SessionUser,
@@ -151,17 +152,21 @@ export async function deleteEventAction(
 ): Promise<ActionState> {
   await requireRole(ROLES.BOS, ROLES.STAFF);
 
-  try {
-    const id = Number(formData.get("id"));
-    if (!id) return { ok: false, message: "ID tidak valid." };
+  const id = Number(formData.get("id"));
+  if (!id) return { ok: false, message: "ID tidak valid." };
 
+  try {
     await prisma.event.delete({ where: { id } });
-    revalidatePath("/events");
-    revalidatePath("/dashboard");
-    return { ok: true, message: "Event dan seluruh datanya berhasil dihapus." };
   } catch {
     return { ok: false, message: "Terjadi kesalahan saat menghapus." };
   }
+
+  revalidatePath("/events");
+  revalidatePath("/dashboard");
+
+  // Redirect wajib: kalau tidak, Next me-render ulang halaman /events/[id] yang
+  // barusan dihapus -> notFound() -> 404.
+  redirect("/events?dihapus=1");
 }
 
 export async function addRundownAction(

@@ -15,8 +15,13 @@ import {
 
 export const metadata = { title: "Event" };
 
-export default async function EventsPage() {
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function EventsPage({ searchParams }: Props) {
   const session = await requireInternal();
+  const { dihapus } = await searchParams;
   const isLeader = session.role === ROLES.LEADER;
   const canManage = !isLeader;
 
@@ -52,6 +57,16 @@ export default async function EventsPage() {
             : "Daftar seluruh event pernikahan klien"
         }
       />
+
+      {dihapus ? (
+        <div
+          role="status"
+          className="fade-in mb-6 flex items-start gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+        >
+          <span aria-hidden>✓</span>
+          <span>Event berhasil dihapus beserta seluruh data terkaitnya.</span>
+        </div>
+      ) : null}
 
       {canManage ? (
         <Disclosure

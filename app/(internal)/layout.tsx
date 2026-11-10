@@ -76,9 +76,13 @@ export default async function InternalLayout({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="no-print mt-1 flex items-center justify-between gap-3 border-b border-pink-100 bg-white/85 px-4 py-3 backdrop-blur md:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href="/dashboard" className="md:hidden">
-              <BrandLogo siteName={siteName} logoPath={logoPath} size="sm" />
-            </Link>
+            <BrandLogo
+              siteName={siteName}
+              logoPath={logoPath}
+              size="sm"
+              href="/dashboard"
+              className="md:hidden"
+            />
             <div className="hidden min-w-0 md:block">
               <p className="truncate text-sm font-semibold text-zinc-900">{session.nama}</p>
               <p className="truncate text-xs text-pink-600">{ROLE_LABELS[session.role]}</p>
