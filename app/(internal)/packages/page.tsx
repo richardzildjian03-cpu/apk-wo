@@ -9,6 +9,7 @@ import {
 import { ActionForm, SubmitButton, ConfirmSubmit } from "@/components/forms";
 import { PageHeader, EmptyState, Badge } from "@/components/ui";
 import { PaketCarousel } from "@/components/paket-carousel";
+import { Disclosure, InlineToggle } from "@/components/disclosure";
 
 export const metadata = { title: "Paket" };
 
@@ -30,11 +31,7 @@ export default async function PackagesPage() {
         description="Data paket pernikahan sebagai referensi internal (bukan katalog publik)"
       />
 
-      <details className="card mb-6" open={pakets.length === 0}>
-        <summary className="card-header cursor-pointer select-none text-sm font-semibold text-pink-600">
-          + Tambah Paket
-        </summary>
-        <div className="card-body">
+      <Disclosure title="+ Tambah Paket" defaultOpen={pakets.length === 0} className="mb-6">
           <ActionForm action={createPaketAction} className="grid gap-3 md:grid-cols-2">
             <div>
               <label className="label">Nama Paket</label>
@@ -70,8 +67,7 @@ export default async function PackagesPage() {
               <SubmitButton>Tambah Paket</SubmitButton>
             </div>
           </ActionForm>
-        </div>
-      </details>
+      </Disclosure>
 
       {pakets.length === 0 ? (
         <EmptyState message="Belum ada paket terdaftar." />
@@ -105,9 +101,8 @@ export default async function PackagesPage() {
                   </div>
                 ) : null}
 
-                <details className="mt-4">
-                  <summary className="btn-link cursor-pointer list-none">Edit / Hapus</summary>
-                  <div className="mt-2 grid gap-3">
+                <InlineToggle label="Edit / Hapus" className="mt-4">
+                  <div className="grid gap-3">
                     <ActionForm
                       action={updatePaketAction}
                       className="grid gap-2 rounded-lg border border-zinc-200 p-3"
@@ -173,7 +168,7 @@ export default async function PackagesPage() {
                       </ConfirmSubmit>
                     </ActionForm>
                   </div>
-                </details>
+                </InlineToggle>
               </div>
             </div>
           ))}

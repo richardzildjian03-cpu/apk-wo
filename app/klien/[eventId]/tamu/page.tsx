@@ -13,6 +13,7 @@ import { setModeQrAction, regenerateEventTokenAction } from "@/lib/actions/qrmod
 import { ActionForm, SubmitButton, ConfirmSubmit, CopyButton } from "@/components/forms";
 import { Card, EmptyState, TamuStatusBadge, RsvpBadge, StatCard } from "@/components/ui";
 import { ModeQrPanel } from "@/components/mode-qr-panel";
+import { Disclosure, InlineToggle } from "@/components/disclosure";
 
 type Props = {
   params: Promise<{ eventId: string }>;
@@ -66,11 +67,7 @@ export default async function KlienTamuPage({ params }: Props) {
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <details className="card lg:col-span-1" open={tamuList.length === 0}>
-          <summary className="card-header cursor-pointer select-none text-sm font-semibold text-pink-600">
-            + Tambah Tamu
-          </summary>
-          <div className="card-body">
+        <Disclosure title="+ Tambah Tamu" defaultOpen={tamuList.length === 0} className="lg:col-span-1">
             <ActionForm action={addTamuAction} className="space-y-3">
               <input type="hidden" name="eventId" value={event.id} />
               <div>
@@ -111,14 +108,9 @@ export default async function KlienTamuPage({ params }: Props) {
                   : "QR code undangan dibuat otomatis untuk setiap tamu."}
               </p>
             </ActionForm>
-          </div>
-        </details>
+        </Disclosure>
 
-        <details className="card lg:col-span-2">
-          <summary className="card-header cursor-pointer select-none text-sm font-semibold text-zinc-700">
-            Import Tamu Massal (Excel/CSV)
-          </summary>
-          <div className="card-body">
+        <Disclosure title="Import Tamu Massal (Excel/CSV)" tone="zinc" className="lg:col-span-2">
             <ActionForm action={importTamuAction} className="space-y-3">
               <input type="hidden" name="eventId" value={event.id} />
               <p className="text-xs text-zinc-500">
@@ -138,8 +130,7 @@ export default async function KlienTamuPage({ params }: Props) {
                 Kategori: KELUARGA_PRIA, KELUARGA_WANITA, TEMAN, KOLEGA. NoWA opsional.
               </p>
             </ActionForm>
-          </div>
-        </details>
+        </Disclosure>
       </div>
 
       <Card title={`Daftar Tamu & QR (${tamuList.length})`}>
@@ -217,9 +208,8 @@ export default async function KlienTamuPage({ params }: Props) {
                         </div>
                       </td>
                       <td>
-                        <details>
-                          <summary className="btn-link cursor-pointer list-none">Aksi</summary>
-                          <div className="mt-2 grid gap-3">
+                        <InlineToggle label="Aksi">
+                          <div className="grid gap-3">
                             <ActionForm
                               action={updateTamuAction}
                               className="grid gap-2 rounded-lg border border-zinc-200 p-3"
@@ -259,7 +249,7 @@ export default async function KlienTamuPage({ params }: Props) {
                               </ConfirmSubmit>
                             </ActionForm>
                           </div>
-                        </details>
+                        </InlineToggle>
                       </td>
                     </tr>
                   );

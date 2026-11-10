@@ -4,6 +4,7 @@ import { requireInternal } from "@/lib/auth";
 import { ROLES, formatTanggal, formatRupiah } from "@/lib/constants";
 import { createEventAction } from "@/lib/actions/events";
 import { ActionForm, SubmitButton } from "@/components/forms";
+import { Disclosure } from "@/components/disclosure";
 import {
   PageHeader,
   Card,
@@ -53,12 +54,12 @@ export default async function EventsPage() {
       />
 
       {canManage ? (
-        <details className="card mb-6">
-          <summary className="card-header cursor-pointer select-none text-sm font-semibold text-pink-600">
-            + Buat Event Baru
-          </summary>
-          <div className="card-body">
-            <ActionForm action={createEventAction} className="grid gap-4 md:grid-cols-2">
+        <Disclosure
+          title="+ Buat Event Baru"
+          defaultOpen={false}
+          className="mb-6"
+        >
+          <ActionForm action={createEventAction} className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
                 <label className="label">Nama Acara</label>
                 <input name="namaAcara" className="input" placeholder="cth: Pernikahan Rina & Dedi" required />
@@ -140,9 +141,8 @@ export default async function EventsPage() {
               <div className="md:col-span-2">
                 <SubmitButton>Buat Event</SubmitButton>
               </div>
-            </ActionForm>
-          </div>
-        </details>
+          </ActionForm>
+        </Disclosure>
       ) : null}
 
       <Card>
@@ -193,23 +193,18 @@ export default async function EventsPage() {
       </Card>
 
       {canManage ? (
-        <details className="card mt-6">
-          <summary className="card-header cursor-pointer select-none text-sm font-semibold text-zinc-700">
-            Edit / Hapus Event
-          </summary>
-          <div className="card-body">
-            <p className="mb-3 text-sm text-zinc-500">
-              Buka halaman detail event, lalu gunakan bagian &quot;Edit Event&quot; di sana.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {events.map((event) => (
-                <Link key={event.id} href={`/events/${event.id}`} className="btn-secondary">
-                  {event.namaAcara}
-                </Link>
-              ))}
-            </div>
+        <Disclosure title="Edit / Hapus Event" tone="zinc" className="mt-6">
+          <p className="mb-3 text-sm text-zinc-500">
+            Buka halaman detail event, lalu gunakan bagian &quot;Edit Event&quot; di sana.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {events.map((event) => (
+              <Link key={event.id} href={`/events/${event.id}`} className="btn-secondary">
+                {event.namaAcara}
+              </Link>
+            ))}
           </div>
-        </details>
+        </Disclosure>
       ) : null}
     </div>
   );

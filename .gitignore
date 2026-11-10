@@ -54,6 +54,9 @@ public/uploads/settings/*
 
 # log & arsip lokal
 dev-server.log
+dev-error.log
+prod-server.log
+prod-error.log
 *.zip
 
 # folder nyasar (pernah terbawa zip)

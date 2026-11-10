@@ -9,6 +9,7 @@ import {
 } from "@/lib/actions/vendors";
 import { ActionForm, SubmitButton, ConfirmSubmit } from "@/components/forms";
 import { PageHeader, Card, EmptyState } from "@/components/ui";
+import { Disclosure, InlineToggle } from "@/components/disclosure";
 
 export const metadata = { title: "Vendor" };
 
@@ -29,11 +30,7 @@ export default async function VendorsPage() {
       />
 
       {canManage ? (
-        <details className="card mb-6" open={vendors.length === 0}>
-          <summary className="card-header cursor-pointer select-none text-sm font-semibold text-pink-600">
-            + Tambah Vendor
-          </summary>
-          <div className="card-body">
+        <Disclosure title="+ Tambah Vendor" defaultOpen={vendors.length === 0} className="mb-6">
             <ActionForm action={createVendorAction} className="grid gap-3 md:grid-cols-3">
               <div>
                 <label className="label">Nama Vendor</label>
@@ -51,8 +48,7 @@ export default async function VendorsPage() {
                 <SubmitButton>Tambah Vendor</SubmitButton>
               </div>
             </ActionForm>
-          </div>
-        </details>
+        </Disclosure>
       ) : null}
 
       <Card title={`Daftar Vendor (${vendors.length})`}>
@@ -76,11 +72,10 @@ export default async function VendorsPage() {
                     <td className="font-medium text-zinc-900">
                       {v.nama}
                       {!canManage ? (
-                        <details className="mt-1 md:hidden">
-                          <summary className="text-xs text-zinc-400">Detail</summary>
-                          <p className="mt-1 text-xs text-zinc-500">{v.kategoriLayanan}</p>
+                        <InlineToggle label="Detail" className="mt-1 md:hidden">
+                          <p className="text-xs text-zinc-500">{v.kategoriLayanan}</p>
                           <p className="text-xs text-zinc-500">{v.kontak ?? "-"}</p>
-                        </details>
+                        </InlineToggle>
                       ) : null}
                     </td>
                     <td>{v.kategoriLayanan}</td>
@@ -88,9 +83,8 @@ export default async function VendorsPage() {
                     <td className="hidden md:table-cell">{v._count.penugasan}</td>
                     {canManage ? (
                       <td>
-                        <details>
-                          <summary className="btn-link cursor-pointer list-none">Aksi</summary>
-                          <div className="mt-2 grid gap-3">
+                        <InlineToggle label="Aksi">
+                          <div className="grid gap-3">
                             <ActionForm action={updateVendorAction} className="grid gap-2 rounded-lg border border-zinc-200 p-3">
                               <input type="hidden" name="id" value={v.id} />
                               <input name="nama" className="input" defaultValue={v.nama} required />
@@ -112,7 +106,7 @@ export default async function VendorsPage() {
                               </ConfirmSubmit>
                             </ActionForm>
                           </div>
-                        </details>
+                        </InlineToggle>
                       </td>
                     ) : null}
                   </tr>

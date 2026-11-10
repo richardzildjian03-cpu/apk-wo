@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ActionForm, SubmitButton } from "@/components/forms";
+import { InlineToggle } from "@/components/disclosure";
 import type { ActionState } from "@/lib/types";
 
 export type ModeQrPanelProps = {
@@ -177,11 +178,8 @@ export function ModeQrPanel({
               </div>
             </div>
 
-            <details className="mt-4 rounded-lg border border-emerald-200 bg-white/70 p-3">
-              <summary className="cursor-pointer text-xs font-semibold text-emerald-800 select-none">
-                QR tidak berfungsi atau bocor ke pihak lain? Perbarui QR
-              </summary>
-              <div className="mt-3 space-y-2">
+            <InlineToggle label="QR tidak berfungsi atau bocor ke pihak lain? Perbarui QR" className="mt-4 rounded-lg border border-emerald-200 bg-white/70 p-3">
+              <div className="space-y-2">
                 <p className="text-xs text-emerald-700">
                   Membuat QR baru akan membuat QR lama <strong>tidak berlaku lagi</strong>. QR yang
                   sudah dicetak dan dibagikan harus diganti.
@@ -191,7 +189,7 @@ export function ModeQrPanel({
                   <SubmitButton variant="danger">Perbarui QR Master</SubmitButton>
                 </ActionForm>
               </div>
-            </details>
+            </InlineToggle>
           </div>
         ) : (
           <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">

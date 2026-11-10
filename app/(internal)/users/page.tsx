@@ -9,6 +9,7 @@ import {
 } from "@/lib/actions/users";
 import { ActionForm, SubmitButton, ConfirmSubmit } from "@/components/forms";
 import { PageHeader, Card, Badge, EmptyState } from "@/components/ui";
+import { Disclosure, InlineToggle } from "@/components/disclosure";
 
 export const metadata = { title: "Pengguna" };
 
@@ -41,11 +42,7 @@ export default async function UsersPage() {
         description="Kelola akun bos, leader, staff, dan klien (pengantin). Akun klien dibuat oleh WO — tidak ada registrasi mandiri."
       />
 
-      <details className="card mb-6" open={users.length === 0}>
-        <summary className="card-header cursor-pointer select-none text-sm font-semibold text-pink-600">
-          + Buat Akun Baru
-        </summary>
-        <div className="card-body">
+      <Disclosure title="+ Buat Akun Baru" defaultOpen={users.length === 0} className="mb-6">
           <ActionForm action={createUserAction} className="grid gap-3 md:grid-cols-2">
             <div>
               <label className="label">Nama</label>
@@ -76,8 +73,7 @@ export default async function UsersPage() {
               <SubmitButton>Buat Akun</SubmitButton>
             </div>
           </ActionForm>
-        </div>
-      </details>
+      </Disclosure>
 
       <Card title={`Daftar Pengguna (${users.length})`}>
         {users.length === 0 ? (
@@ -115,9 +111,8 @@ export default async function UsersPage() {
                       {u._count.eventsAsKlien + u._count.eventsAsLeader}
                     </td>
                     <td>
-                      <details>
-                        <summary className="btn-link cursor-pointer list-none">Aksi</summary>
-                        <div className="mt-2 grid gap-3">
+                      <InlineToggle label="Aksi">
+                        <div className="grid gap-3">
                           <ActionForm
                             action={updateUserAction}
                             className="grid gap-2 rounded-lg border border-zinc-200 p-3"
@@ -164,7 +159,7 @@ export default async function UsersPage() {
                             </ActionForm>
                           ) : null}
                         </div>
-                      </details>
+                      </InlineToggle>
                     </td>
                   </tr>
                 ))}

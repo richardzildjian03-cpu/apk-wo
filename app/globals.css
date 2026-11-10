@@ -17,7 +17,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -112,6 +111,9 @@ textarea.input {
 }
 .card-header-green {
   @apply border-b border-emerald-700 bg-emerald-600 px-5 py-4;
+}
+.card-header-zinc {
+  @apply border-b border-zinc-200 bg-zinc-50 px-5 py-4;
 }
 .card-title {
   @apply text-base font-semibold text-zinc-900;

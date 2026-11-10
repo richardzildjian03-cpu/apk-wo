@@ -21,6 +21,7 @@ import {
   removePenugasanAction,
 } from "@/lib/actions/events";
 import { ActionForm, SubmitButton, ConfirmSubmit, PrintButton } from "@/components/forms";
+import { Disclosure } from "@/components/disclosure";
 import {
   PageHeader,
   Card,
@@ -522,11 +523,8 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
       ) : null}
 
       {canManage ? (
-        <details className="card mt-6">
-          <summary className="card-header cursor-pointer select-none text-sm font-semibold text-zinc-700">
-            Edit / Hapus Event
-          </summary>
-          <div className="card-body grid gap-6 lg:grid-cols-2">
+        <Disclosure title="Edit / Hapus Event" tone="zinc" className="mt-6">
+          <div className="grid gap-6 lg:grid-cols-2">
             <ActionForm action={updateEventAction} className="space-y-3">
               <input type="hidden" name="id" value={event.id} />
               <div>
@@ -602,7 +600,7 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
               </ActionForm>
             </div>
           </div>
-        </details>
+        </Disclosure>
       ) : null}
     </div>
   );
