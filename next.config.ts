@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "12mb", // upload paket multi-foto & file undangan (maks 10MB)
     },
+    // Next 16 membatasi body request di lapisan proxy (default 10MB).
+    // Tanpa ini, file 10-12MB terpotong dan server action gagal 500.
+    proxyClientMaxBodySize: "12mb",
   },
 
   // Cabut header X-Powered-By (kecil, tapi bersih).

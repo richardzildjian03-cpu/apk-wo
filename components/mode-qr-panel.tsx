@@ -45,7 +45,6 @@ export function ModeQrPanel({
   const [salinTeks, setSalinTeks] = useState<string | null>(null);
 
   const urlCheckin = `${origin}/checkin/${eventToken}`;
-  const urlQr = `${origin}/api/qr-acara/${eventToken}?ukuran=1024`;
   const berubah = pilih !== modeAktif;
 
   async function salin(teks: string, label: string) {

@@ -21,6 +21,7 @@ type Props = {
  */
 export function UndanganPanel({ eventId, tipe, url, file, namaFile, defaultOpen = false }: Props) {
   const [mode, setMode] = useState(tipe === "LINK" || tipe === "FILE" ? tipe : "BAWAAN");
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const statusLabel =
     tipe === "LINK" ? "Link eksternal" : tipe === "FILE" ? "File eksternal" : "Bawaan aplikasi";
@@ -104,7 +105,10 @@ export function UndanganPanel({ eventId, tipe, url, file, namaFile, defaultOpen 
               name="mode"
               className="input"
               value={mode}
-              onChange={(e) => setMode(e.target.value)}
+              onChange={(e) => {
+                setMode(e.target.value);
+                setFileError(null);
+              }}
             >
               <option value="BAWAAN">Undangan bawaan aplikasi</option>
               <option value="LINK">Link undangan (dari client/vendor)</option>
@@ -143,7 +147,19 @@ export function UndanganPanel({ eventId, tipe, url, file, namaFile, defaultOpen 
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
                 className="input file:mr-3 file:rounded-md file:border-0 file:bg-pink-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-pink-700"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f && f.size > 10 * 1024 * 1024) {
+                    setFileError("Ukuran file maksimal 10MB. Pilih file yang lebih kecil.");
+                    e.target.value = "";
+                  } else {
+                    setFileError(null);
+                  }
+                }}
               />
+              {fileError ? (
+                <p className="mt-1 text-xs font-medium text-red-600">{fileError}</p>
+              ) : null}
               <p className="mt-1 text-xs text-zinc-400">
                 PDF, JPG, PNG, atau WebP — maksimal 10MB.
                 {tipe === "FILE" && file ? " Biarkan kosong jika tidak ingin mengganti file." : ""}

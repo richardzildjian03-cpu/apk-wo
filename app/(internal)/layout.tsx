@@ -13,9 +13,8 @@ export default async function InternalLayout({
 }) {
   const session = await requireInternal();
 
-  const [siteName, siteTagline, logoPath] = await Promise.all([
+  const [siteName, logoPath] = await Promise.all([
     getSetting("site_name", "DekorLamaran"),
-    getSetting("site_tagline", "Wedding Organizer Management"),
     getSetting("logo_path"),
   ]);
 
