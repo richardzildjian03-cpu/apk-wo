@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   // polyfill node:fs bawaan Next untuk server actions.
   experimental: {
     serverActions: {
-      bodySizeLimit: "6mb", // upload paket multi-foto (maks 8 x 4MB)
+      bodySizeLimit: "12mb", // upload paket multi-foto & file undangan (maks 10MB)
     },
   },
 

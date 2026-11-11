@@ -125,15 +125,15 @@ npm run db:seed
 > Kalau `db:seed` menolak karena data sudah ada, lewati saja — artinya database
 > sudah terisi.
 
-Siapkan folder upload (foto paket & logo) agar bisa ditulis aplikasi:
+Siapkan folder upload (foto paket, logo, dan file undangan digital) agar bisa ditulis aplikasi:
 
 ```bash
-mkdir -p public/uploads/paket public/uploads/settings
+mkdir -p public/uploads/paket public/uploads/settings public/uploads/undangan
 chmod -R 755 public/uploads
 ```
 
-> Folder ini **harus ikut di-backup** karena berisi foto yang di-upload dari
-> aplikasi, bukan dari repo.
+> Folder ini **harus ikut di-backup** karena berisi foto & file undangan yang
+> di-upload dari aplikasi, bukan dari repo.
 
 ---
 

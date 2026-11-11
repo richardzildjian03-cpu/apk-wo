@@ -13,6 +13,7 @@ import { setModeQrAction, regenerateEventTokenAction } from "@/lib/actions/qrmod
 import { ActionForm, SubmitButton, ConfirmSubmit, CopyButton } from "@/components/forms";
 import { Card, EmptyState, TamuStatusBadge, RsvpBadge, StatCard } from "@/components/ui";
 import { ModeQrPanel } from "@/components/mode-qr-panel";
+import { UndanganPanel } from "@/components/undangan-panel";
 import { Disclosure, InlineToggle } from "@/components/disclosure";
 import { baseUrlFromHeaders } from "@/lib/base-url";
 
@@ -59,6 +60,14 @@ export default async function KlienTamuPage({ params }: Props) {
         origin={base}
         setModeAction={setModeQrAction}
         regenerateAction={regenerateEventTokenAction}
+      />
+
+      <UndanganPanel
+        eventId={event.id}
+        tipe={event.undanganTipe}
+        url={event.undanganUrl}
+        file={event.undanganFile}
+        namaFile={event.undanganNama}
       />
 
       <div className="grid gap-4 lg:grid-cols-3">

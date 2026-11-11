@@ -56,6 +56,12 @@ model Event {
   modeQr      String            @default("PER_TAMU")
   // Token acara untuk QR master (mode SATU_QR)
   eventToken  String?           @unique
+  // Undangan digital eksternal (mis. client sudah punya undangan sendiri).
+  // undanganTipe: "LINK" (tautan) | "FILE" (PDF/gambar yang diunggah)
+  undanganTipe String?
+  undanganUrl  String?
+  undanganFile String?
+  undanganNama String?
   createdAt   DateTime          @default(now())
   pengantin   Pengantin[]
   keluarga    Keluarga[]

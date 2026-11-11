@@ -5,6 +5,7 @@ import { ROLES, formatTanggal } from "@/lib/constants";
 import { savePengantinAction } from "@/lib/actions/guests";
 import { ActionForm, SubmitButton } from "@/components/forms";
 import { Card, EventStatusBadge, StatCard } from "@/components/ui";
+import { UndanganPanel } from "@/components/undangan-panel";
 
 type Props = {
   params: Promise<{ eventId: string }>;
@@ -66,6 +67,16 @@ export default async function KlienOverviewPage({ params }: Props) {
         <StatCard label="Tamu Terdaftar" value={event._count.tamu} hint="QR unik per tamu" variant="pink" />
         <StatCard label="Keluarga" value={event._count.keluarga} hint="Kedua pihak" variant="violet" />
         <StatCard label="Konfirmasi Hadir" value={totalOrangHadir} hint={`${rsvpHadir.length} tamu hadir`} variant="green" />
+      </div>
+
+      <div className="my-6">
+        <UndanganPanel
+          eventId={event.id}
+          tipe={event.undanganTipe}
+          url={event.undanganUrl}
+          file={event.undanganFile}
+          namaFile={event.undanganNama}
+        />
       </div>
 
       <Card title="Data Pengantin" >

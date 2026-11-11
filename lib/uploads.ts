@@ -11,6 +11,15 @@ const ALLOWED_TYPES: Record<string, string> = {
 
 export const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "paket");
 const SETTINGS_DIR = path.join(process.cwd(), "public", "uploads", "settings");
+const UNDANGAN_DIR = path.join(process.cwd(), "public", "uploads", "undangan");
+
+const MAX_UNDANGAN_SIZE = 10 * 1024 * 1024; // 10MB
+const UNDANGAN_TYPES: Record<string, string> = {
+  "application/pdf": ".pdf",
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+};
 
 export type UploadResult =
   | { ok: true; publicPath: string }
@@ -65,6 +74,37 @@ export async function deleteSettingLogo(publicPath: string | null | undefined): 
   const filename = path.basename(publicPath);
   try {
     await unlink(path.join(SETTINGS_DIR, filename));
+  } catch {
+    /* file sudah tidak ada — abaikan */
+  }
+}
+
+/* ---------- Undangan eksternal (link/file dari client) ---------- */
+
+export async function saveUndanganFile(file: File): Promise<UploadResult> {
+  if (file.size === 0) return { ok: false, error: "File undangan kosong." };
+  if (file.size > MAX_UNDANGAN_SIZE) {
+    return { ok: false, error: "Ukuran file undangan maksimal 10MB." };
+  }
+
+  const ext = UNDANGAN_TYPES[file.type];
+  if (!ext) {
+    return { ok: false, error: "Format undangan harus PDF, JPG, PNG, atau WebP." };
+  }
+
+  const filename = `undangan-${Date.now()}-${randomBytes(6).toString("hex")}${ext}`;
+  await mkdir(UNDANGAN_DIR, { recursive: true });
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(path.join(UNDANGAN_DIR, filename), buffer);
+
+  return { ok: true, publicPath: `/uploads/undangan/${filename}` };
+}
+
+export async function deleteUndanganFile(publicPath: string | null | undefined): Promise<void> {
+  if (!publicPath || !publicPath.startsWith("/uploads/undangan/")) return;
+  const filename = path.basename(publicPath);
+  try {
+    await unlink(path.join(UNDANGAN_DIR, filename));
   } catch {
     /* file sudah tidak ada — abaikan */
   }

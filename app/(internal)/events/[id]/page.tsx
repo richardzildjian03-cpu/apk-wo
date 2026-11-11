@@ -22,6 +22,7 @@ import {
 } from "@/lib/actions/events";
 import { ActionForm, SubmitButton, ConfirmSubmit, PrintButton } from "@/components/forms";
 import { Disclosure } from "@/components/disclosure";
+import { UndanganPanel } from "@/components/undangan-panel";
 import {
   PageHeader,
   Card,
@@ -125,6 +126,16 @@ export default async function EventDetailPage({ params, searchParams }: Props) {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="mb-6">
+        <UndanganPanel
+          eventId={event.id}
+          tipe={event.undanganTipe}
+          url={event.undanganUrl}
+          file={event.undanganFile}
+          namaFile={event.undanganNama}
+        />
       </div>
 
       <Tabs

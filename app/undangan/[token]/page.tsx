@@ -95,6 +95,68 @@ export default async function UndanganPage({ params }: Props) {
           </p>
         </section>
 
+        {/* Undangan eksternal dari client/vendor (link atau file) */}
+        {event.undanganTipe === "LINK" && event.undanganUrl ? (
+          <section className="mt-8 rounded-2xl border border-pink-100 bg-white/80 p-6 text-center shadow-sm">
+            <p className="text-xs tracking-[0.3em] text-pink-400 uppercase">Undangan Digital</p>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-600">
+              Penyelenggara acara menyiapkan undangan digital lengkap untuk Anda.
+            </p>
+            <a
+              href={event.undanganUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary mt-4 w-full"
+            >
+              Buka Undangan
+            </a>
+            <p className="mt-3 break-all text-[11px] text-zinc-400">{event.undanganUrl}</p>
+          </section>
+        ) : null}
+
+        {event.undanganTipe === "FILE" && event.undanganFile ? (
+          <section className="mt-8 rounded-2xl border border-pink-100 bg-white/80 p-6 text-center shadow-sm">
+            <p className="text-xs tracking-[0.3em] text-pink-400 uppercase">Undangan Digital</p>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-600">
+              Penyelenggara acara menyiapkan undangan digital lengkap untuk Anda.
+            </p>
+            {event.undanganFile.toLowerCase().endsWith(".pdf") ? (
+              <>
+                <iframe
+                  src={event.undanganFile}
+                  title={`Undangan ${event.namaAcara}`}
+                  className="mt-4 h-[70vh] w-full rounded-xl border border-pink-100 bg-white"
+                />
+                <a
+                  href={event.undanganFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary mt-3 w-full"
+                >
+                  Buka di Tab Baru
+                </a>
+              </>
+            ) : (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={event.undanganFile}
+                  alt={`Undangan ${event.namaAcara}`}
+                  className="mt-4 w-full rounded-xl border border-pink-100"
+                />
+                <a
+                  href={event.undanganFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary mt-3 w-full"
+                >
+                  Buka Ukuran Penuh
+                </a>
+              </>
+            )}
+          </section>
+        ) : null}
+
         {/* Mempelai */}
         <section className="mt-8 grid gap-4">
           {[pria, wanita].filter(Boolean).map((p) => (
