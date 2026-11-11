@@ -125,6 +125,16 @@ npm run db:seed
 > Kalau `db:seed` menolak karena data sudah ada, lewati saja — artinya database
 > sudah terisi.
 
+Siapkan folder upload (foto paket & logo) agar bisa ditulis aplikasi:
+
+```bash
+mkdir -p public/uploads/paket public/uploads/settings
+chmod -R 755 public/uploads
+```
+
+> Folder ini **harus ikut di-backup** karena berisi foto yang di-upload dari
+> aplikasi, bukan dari repo.
+
 ---
 
 ## 7. Build untuk Produksi
@@ -293,6 +303,25 @@ tar -czf /var/backups/uploads-$(date +%F).tar.gz /var/www/dekorlamaran/public/up
 ---
 
 ## 15. Pemecahan Masalah
+
+### Foto upload tidak muncul (404)
+
+Aplikasi menyajikan file upload lewat rute `/uploads/[...path]`, jadi foto yang
+di-upload setelah build tetap tampil. Kalau masih 404:
+
+```bash
+ls -l public/uploads/paket          # pastikan file benar-benar ada
+sudo chown -R $USER:$USER public/uploads
+chmod -R 755 public/uploads
+pm2 restart dekorlamaran
+```
+
+Pastikan juga kode sudah versi terbaru (ada folder `app/uploads/`):
+
+```bash
+git pull origin main
+npm run build && pm2 restart dekorlamaran
+```
 
 ### Build gagal karena kehabisan RAM
 
